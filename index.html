@@ -152,9 +152,6 @@
     #map{height:44vh; min-height:280px; border-radius:0; border-left:0; border-right:0}
   }
   .leaflet-container{font:inherit; background:var(--surface-2)}
-  :root[data-theme="dark"] .leaflet-tile-pane,
-  @media (prefers-color-scheme: dark){}
-  .tiles-dark{filter:invert(1) hue-rotate(180deg) brightness(.92) contrast(.9) saturate(.75)}
 
   .num-marker{
     display:grid; place-items:center; width:28px; height:28px; border-radius:50%;
@@ -576,15 +573,43 @@ document.getElementById('themeBtn').addEventListener('click', ()=>{
 
 /* ========================== map ========================== */
 const map = L.map('map', { scrollWheelZoom:true, zoomControl:true });
-const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom:19, attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-}).addTo(map);
 
-function applyTileTheme(){
-  const dark = currentTheme()==='dark';
-  const pane = map.getPane('tilePane');
-  if(pane) pane.classList.toggle('tiles-dark', dark);
+/* Kaartlagen. CARTO staat hotlinken toe en werkt ook als je index.html
+   rechtstreeks vanaf schijf opent; tile.openstreetmap.org geeft dan vaak een
+   403 omdat het verzoek geen herkomst meebrengt. OSM blijft de reservelaag. */
+const ATTR_CARTO = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' +
+                   ' &middot; &copy; <a href="https://carto.com/attributions">CARTO</a>';
+const ATTR_OSM   = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+
+const TILE_SOURCES = [
+  { id:'carto',
+    light:'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    dark :'https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png',
+    opts :{ subdomains:'abcd', maxZoom:20, attribution:ATTR_CARTO } },
+  { id:'osm',
+    light:'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    dark :'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    opts :{ maxZoom:19, attribution:ATTR_OSM } }
+];
+
+let sourceIndex = 0, tiles = null, tileErrors = 0;
+
+function buildTiles(){
+  const src = TILE_SOURCES[sourceIndex];
+  const url = currentTheme()==='dark' ? src.dark : src.light;
+  if(tiles) map.removeLayer(tiles);
+  tileErrors = 0;
+  tiles = L.tileLayer(url, src.opts).addTo(map);
+  tiles.on('tileerror', ()=>{
+    // Genoeg mislukte tegels achter elkaar? Val terug op de volgende bron.
+    if(++tileErrors >= 4 && sourceIndex < TILE_SOURCES.length-1){
+      sourceIndex++;
+      console.warn('Kaartlaag onbereikbaar, terugvallen op', TILE_SOURCES[sourceIndex].id);
+      buildTiles();
+    }
+  });
 }
+function applyTileTheme(){ buildTiles(); }
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTileTheme);
 
 const routeLatLngs = ROUTE.map(s=>[s.lat, s.lng]);
