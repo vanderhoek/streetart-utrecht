@@ -91,6 +91,21 @@
   }
   .iconbtn:hover{background:var(--accent-soft); border-color:var(--accent)}
 
+  /* Op een telefoon past de badge, de titel en drie pillen niet naast elkaar:
+     de stats gaan eruit (ze staan ook in de hero) en merk + titel gaan onder elkaar. */
+  @media (max-width:760px){
+    :root{ --header-h:56px; }
+    .top-inner{gap:10px}
+    .brand{flex-direction:column; align-items:flex-start; justify-content:center; gap:3px}
+    .brand h1{font-size:.9rem}
+    .fam{font-size:.58rem; letter-spacing:.09em; padding:3px 8px}
+    .stats{display:none}
+  }
+  @media (max-width:360px){
+    .brand h1{font-size:.84rem}
+    .fam{font-size:.55rem; letter-spacing:.06em; padding:3px 7px}
+  }
+
   /* ---------- familiedag ---------- */
   .fam{
     display:inline-block; background:var(--accent); color:#fff;
@@ -163,6 +178,40 @@
   .num-marker.terminus{background:var(--accent-2)}
   .num-marker.extra{background:var(--ink-3); width:22px; height:22px; font-size:.66rem}
   .num-marker.is-active{transform:scale(1.35); z-index:999}
+
+  /* eigen positie */
+  .me-wrap{position:relative; width:18px; height:18px}
+  .me-dot{
+    position:absolute; inset:0; border-radius:50%;
+    background:#1f7ae0; border:3px solid #fff;
+    box-shadow:0 0 0 1px rgba(0,0,0,.25), 0 2px 7px rgba(0,0,0,.4);
+  }
+  .me-pulse{
+    position:absolute; inset:-10px; border-radius:50%;
+    background:rgba(31,122,224,.25); animation:mePulse 2.4s ease-out infinite;
+  }
+  @keyframes mePulse{
+    0%{transform:scale(.55); opacity:.85}
+    100%{transform:scale(1.5); opacity:0}
+  }
+  @media (prefers-reduced-motion:reduce){ .me-pulse{animation:none; opacity:.35} }
+
+  .leaflet-control .locate-btn{
+    width:34px; height:34px; display:grid; place-items:center; cursor:pointer;
+    background:var(--surface); color:var(--ink-2);
+    border:1px solid rgba(0,0,0,.22); border-radius:6px;
+    box-shadow:0 1px 5px rgba(0,0,0,.28);
+  }
+  .leaflet-control .locate-btn:hover{color:var(--ink)}
+  .leaflet-control .locate-btn.on{background:#1f7ae0; color:#fff; border-color:#1a66bd}
+  .leaflet-control .locate-btn.busy{opacity:.6}
+
+  .geo-note{
+    margin-top:12px; font-size:.84rem; color:var(--ink-2);
+    background:var(--surface-2); border:1px solid var(--line);
+    border-radius:10px; padding:9px 12px;
+  }
+  .geo-note b{color:var(--ink)}
 
   .leaflet-popup-content-wrapper{
     background:var(--surface); color:var(--ink); border-radius:12px;
@@ -351,6 +400,7 @@
          onder <em>Elders in de stad</em> staat een lus door de Watervogelbuurt (+1,8 km),
          met de KBTR op zijn gans.</p>
       <p>Koffie bij <strong>Geogap</strong> zit halverwege, bij stop 6.</p>
+      <div class="geo-note" id="geoNote" hidden></div>
       <div class="route-line">
         <span><i class="dot" style="background:var(--accent-2)"></i> start &amp; finish</span>
         <span><i class="dot" style="background:var(--accent)"></i> stops op de route</span>
@@ -997,6 +1047,128 @@ EXTRAS.forEach((stop,i)=>{
 
 map.fitBounds(L.latLngBounds(routePath).pad(0.08));
 applyTileTheme();
+
+/* ========================== waar ben ik? ========================== */
+/* De browser vraagt zelf om toestemming. Dat lukt alleen op https (of localhost),
+   dus vanaf een file:// pagina gebeurt er niets — daarom de uitleg in geoNote. */
+
+let meMarker = null, meCircle = null, watching = false, following = false, locateBtn = null;
+
+const geoNote = document.getElementById('geoNote');
+function note(html){
+  if(!html){ geoNote.hidden = true; return; }
+  geoNote.innerHTML = html;
+  geoNote.hidden = false;
+}
+
+const LocateControl = L.Control.extend({
+  options:{position:'topright'},
+  onAdd(){
+    const wrap = L.DomUtil.create('div', 'leaflet-bar');
+    wrap.style.border = 'none'; wrap.style.background = 'none';
+    const btn = L.DomUtil.create('div', 'locate-btn', wrap);
+    btn.title = 'Toon mijn locatie';
+    btn.setAttribute('role','button');
+    btn.setAttribute('aria-label','Toon mijn locatie op de kaart');
+    btn.innerHTML =
+      '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"' +
+      ' stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>' +
+      '<circle cx="12" cy="12" r="8"/></svg>';
+    L.DomEvent.disableClickPropagation(wrap);
+    L.DomEvent.on(btn, 'click', toggleLocate);
+    locateBtn = btn;
+    return wrap;
+  }
+});
+map.addControl(new LocateControl());
+
+function toggleLocate(){
+  if(watching){ stopLocate(); } else { startLocate(true); }
+}
+
+function startLocate(fly){
+  if(!navigator.geolocation){
+    note('Deze browser kan geen locatie delen.');
+    return;
+  }
+  if(!window.isSecureContext){
+    note('<b>Locatie werkt alleen via https.</b> Open de pagina op de gepubliceerde ' +
+         'website in plaats van als bestand, dan kan je telefoon je positie doorgeven.');
+    return;
+  }
+  following = !!fly;
+  watching = true;
+  locateBtn && locateBtn.classList.add('busy');
+  note('Bezig met je locatie zoeken\u2026');
+  map.locate({ watch:true, enableHighAccuracy:true, timeout:20000, maximumAge:5000 });
+}
+
+function stopLocate(){
+  watching = false; following = false;
+  map.stopLocate();
+  if(meMarker){ map.removeLayer(meMarker); meMarker = null; }
+  if(meCircle){ map.removeLayer(meCircle); meCircle = null; }
+  locateBtn && locateBtn.classList.remove('on','busy');
+  note('');
+}
+
+map.on('locationfound', e => {
+  locateBtn && locateBtn.classList.remove('busy');
+  locateBtn && locateBtn.classList.add('on');
+  note('');
+
+  if(!meMarker){
+    meMarker = L.marker(e.latlng, {
+      icon: L.divIcon({
+        className:'',
+        html:'<div class="me-wrap"><div class="me-pulse"></div><div class="me-dot"></div></div>',
+        iconSize:[18,18], iconAnchor:[9,9]
+      }),
+      zIndexOffset: 1000, interactive: false
+    }).addTo(map);
+    meCircle = L.circle(e.latlng, {
+      radius: e.accuracy || 25, color:'#1f7ae0', weight:1,
+      fillColor:'#1f7ae0', fillOpacity:.12, interactive:false
+    }).addTo(map);
+  } else {
+    meMarker.setLatLng(e.latlng);
+    meCircle.setLatLng(e.latlng).setRadius(e.accuracy || 25);
+  }
+
+  if(following){
+    map.flyTo(e.latlng, Math.max(map.getZoom(), 16), {duration:.8});
+    following = false;          // daarna niet meer ongevraagd de kaart verslepen
+  }
+});
+
+map.on('locationerror', err => {
+  watching = false;
+  locateBtn && locateBtn.classList.remove('on','busy');
+  const denied = err.code === 1 || /denied|permission/i.test(err.message || '');
+  note(denied
+    ? '<b>Locatie staat uit.</b> Je kunt \u2019m alsnog aanzetten via het slotje in de adresbalk ' +
+      '(of Instellingen \u2192 Safari/Chrome \u2192 Locatie) en daarna op het richtkruis op de kaart tikken.'
+    : 'Je locatie is even niet te bepalen. Tik op het richtkruis rechtsboven op de kaart om het opnieuw te proberen.');
+});
+
+/* Bij het openen meteen vragen, zodat je onderweg niet eerst hoeft te zoeken.
+   Is er al eerder toestemming gegeven, dan verschijnt de stip zonder dialoog. */
+(function askOnLoad(){
+  if(!navigator.geolocation || !window.isSecureContext) return;
+  if(navigator.permissions && navigator.permissions.query){
+    navigator.permissions.query({name:'geolocation'}).then(st => {
+      if(st.state === 'denied'){
+        note('<b>Locatie staat uit voor deze site.</b> Zet \u2019m aan via het slotje in de adresbalk ' +
+             'en tik daarna op het richtkruis rechtsboven op de kaart, dan zie je jezelf meelopen.');
+      } else {
+        startLocate(false);
+      }
+    }).catch(() => startLocate(false));
+  } else {
+    startLocate(false);
+  }
+})();
 
 /* ========================== render list ========================== */
 function photoBlock(p){

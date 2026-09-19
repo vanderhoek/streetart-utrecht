@@ -7,8 +7,8 @@ met halverwege koffie bij **Geogap** aan de Nieuwegracht.
 11 stops, 6,1 km, ruim vijf kwartier lopen (looproute, door Valhalla uitgerekend). Daarnaast 20 extra's elders in de stad,
 waaronder een zijlus door de Watervogelbuurt (+1,8 km) langs de KBTR op een gans.
 
-Alles zit in één bestand: `index.html`. Geen build, geen npm, geen framework.
-Dubbelklikken is genoeg.
+Alles zit in één bestand: `index.html`. Geen build, geen npm, geen framework — wel even
+lokaal serveren in plaats van dubbelklikken, zie *Lokaal draaien*.
 
 ## Wat zit erin
 
@@ -80,8 +80,11 @@ python -m http.server 8000
 
 ## Online zetten
 
-De repo is publiek en GitHub Pages staat aan: **Settings → Pages → Source: `main` / root**.
-De site staat op <https://vanderhoek.github.io/streetart-utrecht/>.
+De repo is publiek. Zet Pages aan via **Settings → Pages → Source: Deploy from a branch → `main` / `/ (root)`**.
+
+Omdat er een custom domain (`vanderhoek.io`) op de user-site-repo `vanderhoek.github.io` staat, erven
+alle project pages dat domein. De site komt dus op <https://vanderhoek.io/streetart-utrecht/>,
+niet op `vanderhoek.github.io/...` — die URL stuurt door.
 
 ## Bronnen en credits
 
