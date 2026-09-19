@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>De Nood-Familiedag 2026 — Street Art Utrecht</title>
-<meta name="description" content="De Nood-Familiedag 2026, zondag 20 september — street art wandeling door Utrecht. Van de Wittevrouwensingel naar En Public in het Griftpark: 11 stops, ruim 5 km.">
+<meta name="description" content="De Nood-Familiedag 2026, zondag 20 september — street art wandeling door Utrecht. Van de Wittevrouwensingel naar En Public in het Griftpark: 11 stops, 6,1 km.">
 <meta name="theme-color" content="#14110f">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>">
 
@@ -152,6 +152,7 @@
     #map{height:44vh; min-height:280px; border-radius:0; border-left:0; border-right:0}
   }
   .leaflet-container{font:inherit; background:var(--surface-2)}
+  .tiles-dark{filter:invert(1) hue-rotate(180deg) brightness(.92) contrast(.9) saturate(.8)}
 
   .num-marker{
     display:grid; place-items:center; width:28px; height:28px; border-radius:50%;
@@ -240,16 +241,44 @@
   .tag.warn{color:var(--accent); border-color:color-mix(in srgb,var(--accent) 35%,transparent);
     background:var(--accent-soft)}
 
+  .shots{grid-column:1/-1; margin-top:12px; display:grid; gap:8px}
+  .shots.multi{grid-template-columns:1fr 1fr}
+  @media (max-width:560px){ .shots.multi{grid-template-columns:1fr} }
   .shot{
-    grid-column:1/-1; margin:12px 0 0; border-radius:10px; overflow:hidden;
+    border-radius:10px; overflow:hidden;
     border:1px solid var(--line); background:var(--surface-2); position:relative;
   }
-  .shot img{display:block; width:100%; height:auto; aspect-ratio:4/3; object-fit:cover}
+  .shot.span{grid-column:1/-1}
+  .shot img{display:block; width:100%; height:auto; aspect-ratio:var(--ar, 4/3); object-fit:cover}
   .credit{
     font-size:.68rem; color:var(--ink-3); padding:5px 9px; border-top:1px solid var(--line);
     background:var(--surface);
   }
   .credit a{color:var(--ink-2)}
+
+  .more{
+    grid-column:1/-1; margin-top:12px; padding-top:11px; border-top:1px solid var(--line);
+  }
+  .more summary{
+    cursor:pointer; font-size:.78rem; font-weight:660; color:var(--accent);
+    list-style:none; display:inline-flex; align-items:center; gap:7px;
+    padding:2px 0; user-select:none;
+  }
+  .more summary::-webkit-details-marker{display:none}
+  .more summary::before{
+    content:""; width:0; height:0; border-style:solid;
+    border-width:4.5px 0 4.5px 6px; border-color:transparent transparent transparent currentColor;
+    transition:transform .16s ease;
+  }
+  .more[open] summary::before{transform:rotate(90deg)}
+  .more summary:hover{color:var(--ink)}
+  .more-body{
+    margin-top:9px; font-size:.875rem; line-height:1.62; color:var(--ink-2);
+    max-width:66ch;
+  }
+  .more-body p{margin:0 0 9px}
+  .more-body p:last-child{margin:0}
+  .more-body em{font-style:italic}
 
   .links{grid-column:1/-1; display:flex; flex-wrap:wrap; gap:8px; margin-top:11px}
   .lnk{
@@ -300,8 +329,8 @@
     <p class="kicker"><span class="spark">◆</span> De Nood-Familiedag 2026 <span class="spark">◆</span></p>
     <h2>De street art wandeling</h2>
     <p class="lede">Van de Wittevrouwensingel naar <strong>En Public</strong> in het Griftpark, langs de
-       mooiste muren van de stad. Elf stops, ruim vijf kilometer, en halverwege koffie bij Geogap.</p>
-    <p class="hero-meta"><strong>Zondag 20 september 2026</strong> · start Wittevrouwensingel 71 · 11 stops · ±5,7 km · ruim een uur lopen</p>
+       mooiste muren van de stad. Elf stops, ruim zes kilometer, en halverwege koffie bij Geogap.</p>
+    <p class="hero-meta"><strong>Zondag 20 september 2026</strong> · start Wittevrouwensingel 71 · 11 stops · 6,1 km · ruim vijf kwartier lopen</p>
   </div>
 </section>
 
@@ -371,39 +400,114 @@ const COMMONS = "https://upload.wikimedia.org/wikipedia/commons/thumb/";
 const ROUTE = [
   {
     title:"Start — Wittevrouwensingel 71",
+    more:`<p>De Wittevrouwensingel is het restant van de middeleeuwse stadsgracht. Tot in de negentiende eeuw
+stond hier de Wittevrouwenpoort en liep er een verdedigingswerk omheen; toen de vestingwerken hun nut
+verloren, liet de stad landschapsarchitect Zocher er een slingerend park van maken. Dat is het
+Zocherplantsoen dat je nu aan je rechterhand hebt: een groene ring van bijna vijf kilometer die de
+hele binnenstad omsluit.</p>
+<p>De naam komt van het klooster van de witte vrouwen — nonnen in witte habijten — dat hier buiten
+de muren lag. Langs de singel en onder de bruggen is het een van de plekken waar Utrechtse graffiti
+al decennia komt en gaat: weinig blijft er lang staan, en dat hoort erbij. Wat je hier ziet is dus
+vrijwel zeker niet meer wat er op de foto staat.</p>`,
     place:"Wittevrouwensingel 71", lat:52.096966, lng:5.127116, kind:"terminus",
     text:"Hier begin je. De singel af, bij de Wittevrouwenbrug de stad in, en dan dwars door de binnenstad naar beneden richting de Lange Nieuwstraat."
+    ,photo:{
+      src:COMMONS+"d/de/Grafitti_-_Wittevrouwensingel_Utrecht_%2849905116107%29.jpg/1280px-Grafitti_-_Wittevrouwensingel_Utrecht_%2849905116107%29.jpg",
+      by:"FaceMePLS", lic:"CC BY 2.0", alt:"Graffiti aan de Wittevrouwensingel",
+      page:"https://commons.wikimedia.org/wiki/File:Grafitti_-_Wittevrouwensingel_Utrecht_(49905116107).jpg"
+    }
   },
   {
     title:"Nijntje", place:"Lange Nieuwstraat", lat:52.086183, lng:5.124183,
+    more:`<p>Dick Bruna (1927–2017) was zijn leven lang Utrechter. Hij bedacht nijntje in 1955, toen hij zijn
+zoontje op vakantie in Egmond verhalen vertelde over een konijntje dat om het huisje heen sprong.
+Het eerste boekje verscheen datzelfde jaar. Er volgden er ruim dertig, in meer dan vijftig talen.</p>
+<p>Het geheim zit in wat er niet staat. Bruna tekende met een dikke penseellijn, in een handvol vlakke
+kleuren, en schrapte net zo lang tot alleen het hoogstnodige overbleef — twee streepjes en een kruisje
+zijn genoeg voor een gezicht. Juist daardoor leent nijntje zich zo goed voor een muur: je herkent haar
+uit honderd meter, ook als iemand haar met spuitbussen heeft nagetrokken. Een paar straten verderop,
+aan de Agnietenstraat, zit het nijntje museum, en door de hele stad staan nijntje-verkeerspaaltjes.</p>`,
     text:"Utrechts bekendste inwoner, teruggebracht tot een paar lijnen op een muur in de Lange Nieuwstraat — een straat of wat van het nijntje museum vandaan.",
     photo:{
-      src:COMMONS+"3/3c/Miffy_street_art%2C_Lange_Nieuwstraat%2C_Utrecht_2024-11-28.jpg/1024px-Miffy_street_art%2C_Lange_Nieuwstraat%2C_Utrecht_2024-11-28.jpg",
+      src:COMMONS+"3/3c/Miffy_street_art%2C_Lange_Nieuwstraat%2C_Utrecht_2024-11-28.jpg/1280px-Miffy_street_art%2C_Lange_Nieuwstraat%2C_Utrecht_2024-11-28.jpg",
       by:"Andy Li", lic:"CC0",
       page:"https://commons.wikimedia.org/wiki/File:Miffy_street_art,_Lange_Nieuwstraat,_Utrecht_2024-11-28.jpg"
     }
   },
   {
     title:"D'Oude Tolsteech-Poort", artist:"Jos Peeters", place:"Wijde Watersteeg",
+    more:`<p>De Tolsteegpoort was eeuwenlang de zuidelijke toegang tot de stad. De middeleeuwse versie bestond
+uit twee vierkante torens aan weerszijden van de Oudegracht; de roodgeverfde oostelijke toren deed
+dienst als stadsgevangenis. In 1565 kwam daar een veel lagere poort in renaissancestijl voor in de
+plaats. In de negentiende eeuw had de stad haar verdedigingswerken niet meer nodig en ging de poort
+tegen de vlakte, om plaats te maken voor het Zocherplantsoen.</p>
+<p>Jos Peeters schildert dat soort verdwenen stukken stad terug op blinde muren, en doet dat eerder als
+schilder dan als graffitikunstenaar: geen spuitbus maar penseel, en een oud-Hollands palet dat meer aan
+een zeventiende-eeuws stadsgezicht doet denken dan aan straatkunst. Je komt zijn werk door heel Utrecht
+tegen — aan de 1e Daalsedijk, aan de Jutfaseweg en bij de Liesboschbrug.</p>`,
     lat:52.082308, lng:5.123277,
     text:"Geen spuitbus maar penseel. Een oud-Hollands stadsgezicht van de Tolsteegpoort, die hier ooit stond, in dezelfde stijl als het werk dat Peeters aan de Vaartsche Rijn maakte."
   },
   {
     title:"De blusemmers", place:"Nauwe Watersteeg", lat:52.082459, lng:5.123152,
+    more:`<p>Voordat er een brandweer bestond, was blussen een zaak van de hele buurt. Utrecht was grotendeels
+van hout gebouwd en een uitslaande brand kon een halve wijk kosten, dus gold de regel dat iedereen
+die het alarm hoorde met emmers naar de gracht rende. Elk huishouden moest leren emmers in huis hebben;
+ze werden van hand tot hand doorgegeven in een ketting van mensen tussen het water en het vuur. Pas
+met de komst van de brandspuit in de zeventiende eeuw — en later de georganiseerde brandweer —
+verdween dat gesjouw.</p>
+<p>De steeg waarin de schildering zit is niet toevallig gekozen: de Nauwe Watersteeg is precies zo'n
+doorgang naar het water als waar die emmerkettingen doorheen liepen. Wie de maker is, staat er niet
+bij; dat geldt voor veel van het kleinere werk in de Utrechtse stegen.</p>`,
     text:"Het smalste steegje van de route. Op de muur sjouwen buurtbewoners emmers water naar een brand — uit de tijd dat blussen nog een kwestie was van de hele straat uit bed."
   },
   {
     title:"De Letters van Utrecht", place:"Oudegracht, t.h.v. nr. 279", lat:52.086208, lng:5.121890,
+    more:`<p>Sinds 2012 hakt elke zaterdag tussen 13.00 en 14.00 uur een steenhouwer één letter in een bestaande
+straatklinker. De letters vormen samen één doorlopend gedicht, geschreven door het Utrechts
+Dichtersgilde, dat bewust nooit af is: wat nog niet in de stoep staat, blijft geheim. Het tempo ligt op
+ongeveer zeven meter per jaar, zodat een gemiddelde zin er zo'n drie jaar over doet.</p>
+<p>Het project financiert zichzelf letter voor letter. Wie 125 euro of meer geeft, krijgt een letter op
+zijn naam — vaak gekozen bij een geboorte of een overlijden, zodat het gedicht ook een soort
+gemeenschappelijke gedenksteen is geworden. De regel loopt in een U vanaf de westelijke Oudegracht
+richting het Ledig Erf en buigt daarna via de Wijde Doelen en de Lange Nieuwstraat naar de Nieuwegracht.
+In dit tempo duurt het nog decennia voor de letters bij het Ledig Erf aankomen.</p>`,
     text:"Een gedicht dat nooit af komt, letter voor letter in de klinkers gehakt. Elke zaterdag tussen 13.00 en 14.00 uur zit er een steenhouwer op zijn knieën om er één bij te beitelen. In dit tempo staat het gedicht pas rond 2080 bij het Ledig Erf.",
     tags:["straatpoëzie","elke zaterdag 13–14 uur"]
+    ,photo:{
+      src:COMMONS+"1/19/The_beginning_of_The_Letters_of_Utrecht.jpg/1280px-The_beginning_of_The_Letters_of_Utrecht.jpg",
+      by:"EphemeralKnowledge", lic:"publiek domein", alt:"De eerste letters van het gedicht in de klinkers",
+      page:"https://commons.wikimedia.org/wiki/File:The_beginning_of_The_Letters_of_Utrecht.jpg"
+    }
   },
   {
     title:"Koffie bij Geogap", artist:"Geogap B.V.", place:"Nieuwegracht 2B",
+    more:`<p>De Nieuwegracht werd rond 1390 gegraven, ruim drie eeuwen na de Oudegracht, en is altijd de
+deftigere van de twee geweest. Waar de Oudegracht een werkgracht was vol handel en bier, kwamen hier
+de kanunniken van de Dom te wonen: brede huizen, diepe tuinen en dubbele werven die trapsgewijs naar
+het water aflopen. Die werven zijn een Utrechtse uitvinding — kelders die onder de straat doorlopen
+en aan het water uitkomen, zodat je goederen rechtstreeks van de boot je pakhuis in kon rollen.</p>
+<p>Je zit hier vlak bij de Pausdam, het kruispunt genoemd naar Paus Adrianus VI, de enige Nederlandse
+paus, die verderop een huis liet bouwen dat hij nooit heeft bewoond. Geogap, op nummer 2B, doet
+geodata en kaartwerk — een toepasselijke plek om halverwege een wandeling met een kaart even te gaan
+zitten.</p>`,
     lat:52.089950, lng:5.124105,
     text:"Halverwege, aan de Nieuwegracht vlak bij de Pausdam. Even zitten en koffie, en dan het tweede deel door de stegen achter de Springweg."
   },
   {
     title:"Strosteeg", place:"Strosteeg, rond parkeergarage Springweg", lat:52.088545, lng:5.119842,
+    more:`<p>De muurschildering van Caroline Bleeker hoort bij de <em>Utrechtse muurformules</em>, een reeks van
+de Universiteit Utrecht waarin ontdekkingen die in deze stad zijn gedaan op blinde muren worden gezet.
+Deze kwam er in november 2021; in dezelfde reeks zitten onder meer Buys Ballot met het dopplereffect
+en Ornstein met de brownse beweging.</p>
+<p>Bleeker (1897–1985) promoveerde in 1928 cum laude in de natuurkunde in Utrecht en begon daarna voor
+zichzelf: een adviesbureau en een instrumentenfabriek in de stad. Samen met Nobelprijswinnaar Frits
+Zernike ontwikkelde ze de fasecontrastmicroscoop, waarmee je levende cellen kunt bekijken zonder ze
+met kleurstof te doden; in 1947 kregen ze er patent op. In de oorlog verstopte ze onderduikers in haar
+fabriek. Ze nam bewust ook vrouwen aan, in een vak waarin dat toen hoogst ongebruikelijk was.</p>
+<p>De steeg is verder van de straatkunst zelf. <em>No crying over spilled milk, Honey</em> is van het
+Nederlandse duo Pipsqueak was here!!!, dat met sjablonen werkt. En <em>Lof der Keramiek</em> is geen
+verf maar aardewerk: drie tegeltableaus voor de pottenbakkerijen die hier ooit zaten.</p>`,
     text:"Een achterafsteeg achter parkeergarage Springweg, van onder tot boven ingepikt door straatkunst. Vier werken op een rij:",
     list:[
       "<em>Dr. Caroline Bleeker</em> — de Utrechtse natuurkundige die hier haar eigen optische fabriek opbouwde",
@@ -411,132 +515,373 @@ const ROUTE = [
       "Een Utrechts tafereel over de volle breedte van de steeg",
       "<em>Lof der Keramiek</em> — drie tegeltableaus, een knipoog naar kunstkeramiekfabriek St. Lukas en pottenbakkerij De Vier Paddestoelen, die hier ooit zaten"
     ]
+    ,photo:[
+      { src:COMMONS+"c/cc/Graffiti_in_Utrecht_%28city%29_pipsqueakwashere_Pipsqueak_was_here_-_No_crying_over_spilled_milk%2C_Honey_%28washere_at_pipsqueak.nl%29.jpg/1280px-Graffiti_in_Utrecht_%28city%29_pipsqueakwashere_Pipsqueak_was_here_-_No_crying_over_spilled_milk%2C_Honey_%28washere_at_pipsqueak.nl%29.jpg",
+        by:"Qwertzu111111", lic:"CC BY-SA 4.0", ratio:"16/9", alt:"No crying over spilled milk, Honey",
+        page:"https://commons.wikimedia.org/wiki/File:Graffiti_in_Utrecht_(city)_pipsqueakwashere_Pipsqueak_was_here_-_No_crying_over_spilled_milk,_Honey_(washere_at_pipsqueak.nl).jpg" },
+      { src:COMMONS+"1/1a/Muurschildering_Utrecht_Lili_Bleeker.jpg/1280px-Muurschildering_Utrecht_Lili_Bleeker.jpg",
+        by:"Ellywa", lic:"CC BY-SA 4.0", ratio:"16/9", alt:"Muurschildering van Caroline Bleeker",
+        page:"https://commons.wikimedia.org/wiki/File:Muurschildering_Utrecht_Lili_Bleeker.jpg" },
+      { src:COMMONS+"1/18/Lof_der_Keramiek_Strosteeg_Utrecht.jpg/1280px-Lof_der_Keramiek_Strosteeg_Utrecht.jpg",
+        by:"Brbbl", lic:"CC BY-SA 3.0", span:true, ratio:"1280/203", alt:"De drie tegeltableaus Lof der Keramiek",
+        page:"https://commons.wikimedia.org/wiki/File:Lof_der_Keramiek_Strosteeg_Utrecht.jpg" }
+    ]
   },
   {
     title:"De Mariakerk", year:2021, place:"Mariaplaats / Maria Majorplein",
+    more:`<p>De Mariakerk werd eind elfde eeuw gesticht door keizer Hendrik IV en bisschop Koenraad, en halverwege
+de twaalfde eeuw voltooid. Ze was een van de kapittelkerken die samen met de Dom, de Pieterskerk, de
+Janskerk en de Salvatorkerk een kruis over de stad vormden — het beroemde Utrechtse kerkenkruis. De
+kerk gold als een van de mooiste romaanse gebouwen van het land.</p>
+<p>Begin negentiende eeuw werd ze gesloopt. Wat overbleef is de pandhof: de kloostergang met zijn
+bogen ligt er nog, tegenwoordig een van de stilste plekjes van de binnenstad, en de fundamenten zitten
+onder het gebouw voor Kunsten en Wetenschappen waar nu het conservatorium zit. Hoe de kerk er precies
+uitzag weten we vooral door Pieter Saenredam, die haar in de zeventiende eeuw keer op keer tekende en
+schilderde. De muurschildering uit 2021 gebruikt dat beeld om haar terug te zetten op het plein.</p>`,
     lat:52.089731, lng:5.118083,
     text:"De Mariakerk is in de negentiende eeuw afgebroken. Deze schildering zet ’m terug op zijn plek, zodat je vanaf het plein alsnog tegen de kerk aankijkt."
   },
   {
     title:"Mural Zakkendragerssteeg", place:"Zakkendragerssteeg, binnenstad",
+    more:`<p>De naam zegt wat hier gebeurde. Zakkendragers waren de sjouwers van de graanhandel: zij tilden de
+zakken van de schepen op de Oudegracht naar de pakhuizen en de markt. Het was zwaar, laagbetaald werk,
+maar wel geregeld — de zakkendragers hadden een eigen gilde, met vaste tarieven en een eigen huisje,
+en het aantal plaatsen lag vast zodat het werk eerlijk rondging.</p>
+<p>De stegen tussen de Oudegracht en de Springweg zijn nog altijd de smalle achterkant van de
+binnenstad: te nauw voor auto's, half vergeten, en daarmee precies het soort plek waar straatkunst
+de ruimte krijgt. Wie deze mural maakte is niet gedocumenteerd, wat voor veel steegwerk in Utrecht
+geldt.</p>`,
     lat:52.092638, lng:5.115770,
     text:"Nog één steeg, en dan loop je de binnenstad uit.",
     photo:{
-      src:COMMONS+"c/cf/Mural_-_Zakkendragerssteeg_Utrecht_%2833452499258%29.jpg/1024px-Mural_-_Zakkendragerssteeg_Utrecht_%2833452499258%29.jpg",
+      src:COMMONS+"c/cf/Mural_-_Zakkendragerssteeg_Utrecht_%2833452499258%29.jpg/1280px-Mural_-_Zakkendragerssteeg_Utrecht_%2833452499258%29.jpg",
       by:"FaceMePLS", lic:"CC BY 2.0",
       page:"https://commons.wikimedia.org/wiki/File:Mural_-_Zakkendragerssteeg_Utrecht_(33452499258).jpg"
     }
   },
   {
     title:"Muurschildering Grietstraat", artist:"Vijftien studenten, o.l.v. Lisette Jansen",
+    more:`<p>Dit is een collectief werk: vijftien studenten schilderden het onder begeleiding van Lisette Jansen,
+ieder aan een eigen deel van de muur. Dat is in Utrecht een vrij gangbare manier om aan een mural te
+komen — veel van het werk in de woonwijken komt tot stand met buurtbewoners, scholen of
+opleidingen erbij, waarbij de bewoners meebeslissen wat erop komt. Zo werkte het ook bij de boekenkast
+in de Mimosastraat, waar de buren hun lievelingsboeken mochten aandragen, en bij de mural aan de
+Croeselaan met verhalen uit de Dichterswijk.</p>
+<p>Je staat hier in de Vogelenbuurt, een arbeidersbuurt uit het begin van de twintigste eeuw die samen
+met de Tuinwijk en de Lauwerecht de wijk Votulast vormt. Er hangt in deze buurt veel muurwerk op korte
+afstand van elkaar; de Draaiweg en de Adelaarstraat, met de mural van Dafne Schippers, liggen om de
+hoek.</p>`,
     place:"Grietstraat 1, Vogelenbuurt", lat:52.097789, lng:5.123470,
     text:"Laatste muur voor het park, en eentje die precies op de route ligt: vijftien studenten hebben hem samen geschilderd, ieder een stuk."
   },
   {
     title:"Finish — En Public", place:"Blauwkapelseweg 30, Griftpark",
+    more:`<p>Dat je hier op een terras in het gras zit, is minder vanzelfsprekend dan het lijkt. Van 1862 tot
+1960 stond op deze plek de gemeentelijke gasfabriek, die steenkool omzette in stadsgas voor de
+straatverlichting en de keukens. Wat er aan teer, cyanide en benzeen overbleef, ging simpelweg de grond
+in. Toen dat in de jaren zeventig en tachtig doordrong, stond het terrein bekend als het gifpark —
+een van de ernstigste bodemverontreinigingen van Nederland.</p>
+<p>De sanering werd een van de grootste ooit in het land. De vervuiling is niet weggehaald maar
+ingekapseld: er staat een ondergrondse wand omheen, de grond is afgedekt, en het grondwater wordt tot
+op de dag van vandaag permanent opgepompt en gezuiverd. In 1999 ging het park open. Onder je voeten
+draait dus nog steeds een installatie door — terwijl erboven een skatebaan, een kinderboerderij en
+een flink stuk gazon liggen.</p>`,
     lat:52.099887, lng:5.127957, kind:"terminus",
     text:"Eindpunt aan de rand van het Griftpark. Vanaf de Grietstraat is het nog een paar minuten — en dan zit je."
+    ,photo:{
+      src:COMMONS+"2/26/Griftpark_Blauwkapelseweg_Utrecht.JPG/1280px-Griftpark_Blauwkapelseweg_Utrecht.JPG",
+      by:"Antoine", lic:"CC BY-SA 3.0", alt:"Het Griftpark aan de Blauwkapelseweg",
+      page:"https://commons.wikimedia.org/wiki/File:Griftpark_Blauwkapelseweg_Utrecht.JPG"
+    }
   }
 ];
 
 const EXTRAS = [
   { title:"De Boekenkast", artist:"Jan is de Man & Deef Feed", year:2019, place:"Mimosastraat, Ondiep",
+    more:`<p>In 2019 vroegen Jan Heinsbroek (Jan is de Man) en Deef Feed de bewoners van de Mimosastraat naar hun
+lievelingsboek. Wat er daarna op de kopgevel verscheen, was een boekenkast van drie verdiepingen hoog,
+met in de ruggen precies die titels — in het Nederlands, Arabisch, Turks, Spaans en Chinees, want zo
+zag de straat eruit.</p>
+<p>De foto's gingen de hele wereld over: van Amerikaanse en Aziatische nieuwssites tot Reddit-voorpagina's.
+Het idee erachter is simpel en daarom sterk: een gevel die laat zien wie er achter woont, zonder er
+iets over te beweren. Sindsdien zijn er in andere steden en landen navolgingen geschilderd.</p>`,
     lat:52.101301, lng:5.099436,
     text:"Een boekenkast van drie hoog, met de lievelingsboeken van de buurt in de ruggen. De meest gefotografeerde muur van Utrecht.",
-    photo:{src:COMMONS+"b/be/Muurschildering_Boekenkast_JanIsDeMan.jpg/1024px-Muurschildering_Boekenkast_JanIsDeMan.jpg",
+    photo:{src:COMMONS+"b/be/Muurschildering_Boekenkast_JanIsDeMan.jpg/1280px-Muurschildering_Boekenkast_JanIsDeMan.jpg",
       by:"Kattenkruid", lic:"CC BY-SA 4.0",
       page:"https://commons.wikimedia.org/wiki/File:Muurschildering_Boekenkast_JanIsDeMan.jpg"} },
 
   { title:"Slapende Mars", artist:"Collectief De Strakke Hand", place:"Westplein, Lombok",
+    more:`<p>Hendrick ter Brugghen schilderde <em>De slapende Mars</em> rond 1629. Hij hoorde bij de Utrechtse
+caravaggisten: een groep schilders die in Rome het werk van Caravaggio had gezien en diens harde licht
+en donkere achtergronden mee terugnam naar Utrecht. De oorlogsgod zit hier onderuitgezakt te slapen,
+met zijn wapens terzijde — in 1629, midden in de Tachtigjarige Oorlog, was dat een niet mis te
+verstane wens.</p>
+<p>Het doek hangt in het Centraal Museum, een paar honderd meter verderop. De muurversie is van
+collectief De Strakke Hand, dat meerdere Utrechtse meesters op stadsformaat op blinde gevels heeft
+gezet.</p>
+<p>Het Westplein zelf is al jaren onderwerp van discussie: waar nu nog een brede verkeersbak ligt,
+moet de komende jaren weer een gracht en een woonwijk komen. Lombok, de wijk erachter, is een van de
+meest gemengde buurten van de stad — en de Kanaalstraat een van de levendigste winkelstraten.</p>`,
     lat:52.091067, lng:5.105247,
     text:"Hendrick ter Brugghens <em>Slapende Mars</em> (1629), uitvergroot tot woonblokformaat. Onderdeel van de reeks Utrechtse Meesters." },
 
   { title:"Muurschildering Monicahof", artist:"Jan Heinsbroek & Jan is de Man", place:"Monicahof 95, Pijlsweerd",
+    more:`<p>Een tekstwerk op een zijgevel in Pijlsweerd, er naar verluidt in drie dagen op gezet. Jan Heinsbroek
+werkt vaker met letters in plaats van beelden: woorden die groot genoeg zijn om van de overkant te
+lezen en die iets zeggen over de plek waar ze staan.</p>
+<p>Pijlsweerd is een oude arbeidersbuurt tussen de Amsterdamsestraatweg en de Vecht, genoemd naar een
+middeleeuws landgoed. De buurt heeft veel blinde kopgevels — het gevolg van naoorlogse doorbraken en
+sloop — en juist die muren zijn de afgelopen vijftien jaar één voor één beschilderd.</p>
+<p>Heinsbroek werd buiten Utrecht vooral bekend door de boekenkast in de Mimosastraat, maar heeft in de
+stad tientallen muren op zijn naam staan. Hij werkt vrijwel altijd in overleg met de buurt: wat er komt
+te staan, wordt eerst opgehaald bij de mensen die er dagelijks tegenaan kijken.</p>`,
     lat:52.097495, lng:5.112048,
     text:"Tekst op een zijgevel in Pijlsweerd, er in drie dagen op gezet.",
-    photo:{src:COMMONS+"6/6e/%27Muurschildering%27_Monicahof_Utrecht_%2820332946779%29.jpg/1024px-%27Muurschildering%27_Monicahof_Utrecht_%2820332946779%29.jpg",
+    photo:{src:COMMONS+"6/6e/%27Muurschildering%27_Monicahof_Utrecht_%2820332946779%29.jpg/1280px-%27Muurschildering%27_Monicahof_Utrecht_%2820332946779%29.jpg",
       by:"FaceMePLS", lic:"CC BY 2.0",
       page:"https://commons.wikimedia.org/wiki/File:%27Muurschildering%27_Monicahof_Utrecht_(20332946779).jpg"} },
 
   { title:"Otter met Domtoren", artist:"De Verfdokter", place:"Otterstraat 116, hoek Oudenoord",
+    more:`<p>Een otter die de Domtoren vasthoudt, op de hoek van — inderdaad — de Otterstraat. De Verfdokter is
+het alias van een Utrechtse muurschilder die vaak voor buurten en instellingen werkt: gezondheidscentra,
+scholen, verenigingen. Zijn werk is figuratief en vrolijk, met een voorliefde voor dit soort
+letterlijke woordgrappen.</p>
+<p>Otters waren in Nederland lange tijd uitgestorven; pas sinds de herintroductie rond 2002 zwemmen ze
+weer in Nederlandse wateren, inclusief de rivieren rond Utrecht. De straatnaam is ouder dan dat en komt
+niet van het dier maar uit een reeks vernoemingen in de buurt.</p>
+<p>De Domtoren zelf is met 112 meter de hoogste kerktoren van Nederland, gebouwd tussen 1321 en 1382.
+Hij staat los van de kerk sinds een storm in 1674 het middenschip liet instorten — het Domplein
+tussen toren en kerk is letterlijk de plek waar dat schip stond.</p>`,
     lat:52.098565, lng:5.109734,
     text:"Een otter met de Domtoren, op de hoek van de Otterstraat. Precies het soort woordgrap dat Utrecht goed staat.",
-    photo:{src:COMMONS+"8/80/%27Muurschildering%27_Otterstraat_Utrecht_%2819898743363%29.jpg/1024px-%27Muurschildering%27_Otterstraat_Utrecht_%2819898743363%29.jpg",
+    photo:{src:COMMONS+"8/80/%27Muurschildering%27_Otterstraat_Utrecht_%2819898743363%29.jpg/1280px-%27Muurschildering%27_Otterstraat_Utrecht_%2819898743363%29.jpg",
       by:"FaceMePLS", lic:"CC BY 2.0",
       page:"https://commons.wikimedia.org/wiki/File:%27Muurschildering%27_Otterstraat_Utrecht_(19898743363).jpg"} },
 
   { title:"Muurschildering 1e Daalsedijk", artist:"Jos Peeters", place:"1e Daalsedijk, Pijlsweerd",
+    more:`<p>Een lange wand waarop Peeters de geschiedenis van de Daalsebuurt uitrolt. De dijk waar hij naar heet
+liep ooit langs de Leidse Rijn de stad uit; de buurt erachter ontstond in de negentiende eeuw als
+arbeiderswijk bij de spoorwegwerkplaatsen. Het emplacement dat hier decennialang lag, is inmiddels
+grotendeels volgebouwd met woningen.</p>
+<p>Peeters werkt in een schilderachtige, bijna historiserende stijl — meer museumzaal dan spuitbus.
+Je ziet hetzelfde handschrift terug in de Wijde Watersteeg, op de route.</p>
+<p>Het terrein hiernaast, jarenlang bekend als de Cartesiusdriehoek, was tot voor kort spoorwegterrein
+met werkplaatsen en loodsen. Er verrijst nu een nieuwe woonwijk. Muren als deze zijn daarmee ook een
+soort archief: ze laten zien wat er stond voordat de bouwkranen kwamen.</p>`,
     lat:52.095328, lng:5.107522,
     text:"De geschiedenis van de Daalsebuurt, uitgesmeerd over een hele wand.",
-    photo:{src:COMMONS+"3/3c/%27Daalsedijkroute%27_Utrecht_%2818674863418%29.jpg/1024px-%27Daalsedijkroute%27_Utrecht_%2818674863418%29.jpg",
+    photo:{src:COMMONS+"3/3c/%27Daalsedijkroute%27_Utrecht_%2818674863418%29.jpg/1280px-%27Daalsedijkroute%27_Utrecht_%2818674863418%29.jpg",
       by:"FaceMePLS", lic:"CC BY 2.0",
       page:"https://commons.wikimedia.org/wiki/File:%27Daalsedijkroute%27_Utrecht_(18674863418).jpg"} },
 
   { title:"Mural Lagenoord", place:"Lagenoord, Ondiep", lat:52.104973, lng:5.108841,
+    more:`<p>Ondiep is de arbeidersbuurt van Utrecht bij uitstek: gebouwd vanaf de jaren twintig voor gezinnen
+die uit de overvolle binnenstadskrotten moesten worden gehaald, met kleine huizen, smalle straten en
+een sterke eigen identiteit. De buurt kreeg in de jaren negentig en tweeduizend een zware reputatie en
+een grootscheepse herstructurering.</p>
+<p>Muurschilderingen spelen in die vernieuwing een rol: waar gesloopt en bijgebouwd wordt, blijven
+blinde kopgevels achter, en die worden hier consequent beschilderd. Van deze is de maker niet
+gedocumenteerd.</p>
+<p>Lagenoord ligt aan de rand van Ondiep, richting de Vecht en het Zwarte Water. Vroeger lag hier de
+grens tussen stad en polder; de straatnamen in de buurt — Laan van Chartroise, Nijenoord — verwijzen
+naar buitenplaatsen en een kartuizerklooster die hier ooit stonden.</p>`,
     text:"Flink uit de kluiten gewassen muurschildering aan de noordkant van Ondiep.",
-    photo:{src:COMMONS+"e/eb/Mural_-_Lagenoord_Utrecht_%2841891654365%29.jpg/1024px-Mural_-_Lagenoord_Utrecht_%2841891654365%29.jpg",
+    photo:{src:COMMONS+"e/eb/Mural_-_Lagenoord_Utrecht_%2841891654365%29.jpg/1280px-Mural_-_Lagenoord_Utrecht_%2841891654365%29.jpg",
       by:"FaceMePLS", lic:"CC BY 2.0",
       page:"https://commons.wikimedia.org/wiki/File:Mural_-_Lagenoord_Utrecht_(41891654365).jpg"} },
 
   { title:"Dafne Schippers", place:"Adelaarstraat, Vogelenbuurt", lat:52.099941, lng:5.118906,
+    more:`<p>Dafne Schippers (Utrecht, 1992) begon als zevenkampster en stapte over op de sprint. In 2015 werd ze
+in Peking wereldkampioen op de 200 meter in 21,63 — destijds de derde tijd ooit gelopen — en in 2017
+prolongeerde ze die titel in Londen. Op de 100 meter pakte ze in 2015 wereldzilver.</p>
+<p>Ze trainde jarenlang bij Hellas in Utrecht en is een van de weinige Nederlandse sprinters die
+wereldwijd meedeed op dat niveau. De muur staat in de Vogelenbuurt, op loopafstand van waar ze
+opgroeide.</p>
+<p>De Vogelenbuurt heeft meer sportgeschiedenis dan je zou denken: even verderop lag het oude stadion
+van Velox, en de wijk grenst aan het Griftpark waar tegenwoordig de skatebaan en de sportvelden liggen.
+De mural is een van de weinige in Utrecht die een nog levende inwoner portretteert.</p>`,
     text:"Utrechts eigen sprintster, op ware grootte tegen een gevel in de Vogelenbuurt.",
-    photo:{src:COMMONS+"e/ed/Dafne_Schippers_-_Adelaarstraat_Utrecht_%2829504891234%29.jpg/1024px-Dafne_Schippers_-_Adelaarstraat_Utrecht_%2829504891234%29.jpg",
+    photo:{src:COMMONS+"e/ed/Dafne_Schippers_-_Adelaarstraat_Utrecht_%2829504891234%29.jpg/1280px-Dafne_Schippers_-_Adelaarstraat_Utrecht_%2829504891234%29.jpg",
       by:"FaceMePLS", lic:"CC BY 2.0",
       page:"https://commons.wikimedia.org/wiki/File:Dafne_Schippers_-_Adelaarstraat_Utrecht_(29504891234).jpg"} },
 
   { title:"Muurdecoratie Draaiweg", place:"Draaiweg, Vogelenbuurt", lat:52.100996, lng:5.115477,
+    more:`<p>De Draaiweg dankt zijn naam aan een draaibrug die hier over de Vecht lag. De straat vormt de grens
+tussen de Vogelenbuurt en Pijlsweerd en is een van de plekken waar de buurt in de afgelopen jaren
+kleur heeft gekregen: trafohuisjes, zijgevels en schuttingen zijn hier stuk voor stuk beschilderd.</p>
+<p>Van dit werk is de maker niet vastgelegd. Dat is bij dit type buurtmural eerder regel dan
+uitzondering — ze worden vaak in opdracht van een bewonerscommissie of woningcorporatie gemaakt,
+zonder dat de naam van de schilder ergens wordt bijgehouden.</p>
+<p>Trafohuisjes zijn in heel Nederland favoriet bij dit soort projecten: ze zijn klein, staan midden in
+de buurt, en niemand vindt het erg als ze kleur krijgen. In Utrecht zijn er inmiddels tientallen
+beschilderd, van het Maasplein tot Overvecht.</p>`,
     text:"Vrolijk beschilderde muur in de Vogelenbuurt.",
-    photo:{src:COMMONS+"6/69/Muurdecoratie_Draaiweg_Utrecht_%2826303210190%29.jpg/1024px-Muurdecoratie_Draaiweg_Utrecht_%2826303210190%29.jpg",
+    photo:{src:COMMONS+"6/69/Muurdecoratie_Draaiweg_Utrecht_%2826303210190%29.jpg/1280px-Muurdecoratie_Draaiweg_Utrecht_%2826303210190%29.jpg",
       by:"FaceMePLS", lic:"CC BY 2.0",
       page:"https://commons.wikimedia.org/wiki/File:Muurdecoratie_Draaiweg_Utrecht_(26303210190).jpg"} },
 
-  { title:"Leonard Ornstein", artist:"Collectief De Strakke Hand", place:"Bij station Vaartsche Rijn",
+  { title:"Leonard Ornstein", artist:"Collectief De Strakke Hand", place:"Oosterkade, bij station Vaartsche Rijn",
+    more:`<p>Ook deze hoort bij de <em>Utrechtse muurformules</em> van de Universiteit Utrecht, de reeks die
+ontdekkingen uit deze stad op blinde muren zet. Hij kwam er in mei 2021 en gaat over de brownse
+beweging: de grillige, willekeurige dans van deeltjes in een vloeistof. Ornstein beschreef die samen
+met George Uhlenbeck in 1930 in wat nu het Ornstein–Uhlenbeckproces heet — wiskunde die tegenwoordig
+net zo hard in de financiële wereld wordt gebruikt als in de natuurkunde.</p>
+<p>Leonard Ornstein (1880–1941) maakte van het Utrechtse natuurkundig laboratorium een instituut van
+wereldnaam. In 1940 werd hij door de Duitse bezetter ontslagen omdat hij Joods was. Hij stierf het jaar
+daarop.</p>`,
     lat:52.079017, lng:5.122116, tags:["lus door de Watervogelbuurt, +1,8 km"],
+    photo:{ src:COMMONS+"a/a4/Leonard_Ornstein_mural%2C_Oosterkade%2C_Utrecht%2C_2021_-_1.jpg/1280px-Leonard_Ornstein_mural%2C_Oosterkade%2C_Utrecht%2C_2021_-_1.jpg",
+      by:"Hans Muller", lic:"CC BY-SA 4.0", alt:"Muurschildering van Leonard Ornstein",
+      page:"https://commons.wikimedia.org/wiki/File:Leonard_Ornstein_mural,_Oosterkade,_Utrecht,_2021_-_1.jpg" },
     text:"Eerbetoon aan natuurkundige Leonard Ornstein (1880–1941), die het Utrechtse natuurkundig laboratorium wereldfaam bezorgde en in 1940 werd ontslagen omdat hij Joods was. Hier begint de lus door de Watervogelbuurt: sla bij de Wijde Watersteeg af richting het Ledig Erf in plaats van terug te lopen naar de Oudegracht." },
 
   { title:"Sun Shine Some Where", artist:"Studio Sigmon", place:"Wulpstraat, Watervogelbuurt",
+    more:`<p>Studio Sigmon zette hier kleur op een verder grauwe zijgevel in de Watervogelbuurt. De buurt —
+straten vernoemd naar wulp, gans, reiger en aanverwanten — ligt ingeklemd tussen de Vaartsche Rijn,
+de Gansstraat en de Waterlinieweg, en heeft in verhouding tot haar formaat opvallend veel straatkunst
+op korte afstand van elkaar.</p>
+<p>Dat is geen toeval: sinds het station Vaartsche Rijn in 2016 openging en het gebied rond Rotsoord
+van industrieterrein in woon- en werkbuurt veranderde, is hier flink wat muurruimte vrijgekomen en
+bewust ingevuld.</p>
+<p>De Wulpstraat ligt op een steenworp van station Vaartsche Rijn, waar je binnen twee minuten op de
+trein naar Utrecht Centraal staat. Wie de zijlus loopt, komt hier vrijwel automatisch langs op weg naar
+de Gansstraat.</p>`,
     lat:52.079539, lng:5.125012, tags:["zijlus"],
     text:"Kleur op een verder grauwe zijgevel — een van de vrolijkste muren van de buurt." },
 
   { title:"De fietsers", artist:"Leerlingen van het Nimeto", year:2015, place:"Watervogelbuurt",
+    more:`<p>Op 4 juli 2015 begon de Tour de France in Utrecht. De Grand Départ trok honderdduizenden mensen naar
+de stad; de proloog was een tijdrit van 13,8 kilometer door de binnenstad, gewonnen door Rohan Dennis
+in een recordgemiddelde van ruim 55 km/u.</p>
+<p>De stad kleurde maandenlang geel, en op tientallen muren verschenen wielrenners. Deze is geschilderd
+door leerlingen van het Nimeto, de Utrechtse vakschool voor vormgeving en restauratie — wat verklaart
+waarom het werk meer op een ontwerpoefening lijkt dan op klassieke graffiti.</p>
+<p>Het Nimeto zit zelf aan de Smijerslaan in Utrecht en leidt al sinds 1936 op in vormgeving, styling
+en restauratie. Dat leerlingen hier een muur mochten doen, past in een bredere Utrechtse gewoonte:
+veel murals in de wijken zijn gemaakt door scholen, buurtgroepen of opleidingen in plaats van door
+gevestigde kunstenaars.</p>`,
     lat:52.079000, lng:5.127200, approx:true, tags:["zijlus"],
     text:"Wielrenners die tegen de muur op fietsen, geschilderd voor de Grand Départ van 2015, toen de Tour de France hier van start ging." },
 
   { title:"De KBTR op een gans", place:"Gansstraat, Watervogelbuurt", lat:52.078576, lng:5.129035,
+    more:`<p>De KBTR — kabouter zonder klinkers — dook rond 2004 voor het eerst op in Utrecht, eerst als
+figuurtje in grotere graffitistukken, later als hoofdpersoon. De maker is anoniem gebleven. Het model
+is de doodgewone Nederlandse tuinkabouter, en juist die alledaagsheid maakt hem bruikbaar: je kunt hem
+overal neerzetten en hij past altijd.</p>
+<p>Inmiddels staat hij in honderden verschijningen door de stad, van kriebelige schetsen tot grote
+politiek getinte stukken, en is hij ook in Rotterdam, Den Haag en Leiden gesignaleerd. Hier vliegt hij
+op een gans door de Gansstraat, een duidelijke knipoog naar Niels Holgersson. Verderop in dezelfde
+straat schiet een zwerm ganzen een steegje in.</p>`,
     tags:["zijlus"],
     text:"De Utregse Kabouter vliegt op een gans door de Gansstraat, als een soort Niels Holgersson in striplijnen. Verderop in dezelfde straat schiet een zwerm ganzen een steegje in." },
 
   { title:"Teddies in Space", artist:"Philipp Jordan", place:"Hopakker", lat:52.098443, lng:5.116548,
+    more:`<p>Teddyberen, raketten en fantasiedieren tussen donker gebladerte — Philipp Jordan combineert
+kinderlijke motieven met een bijna nachtelijk palet, waardoor het werk tegelijk lief en een beetje
+onheilspellend is.</p>
+<p>De Hopakker ligt in de Vogelenbuurt en dankt zijn naam aan de hopvelden die hier buiten de stadsmuur
+lagen: hop voor de Utrechtse bierbrouwerijen, die eeuwenlang een van de grootste bedrijfstakken van de
+stad waren.</p>
+<p>De Hopakker is een korte straat, maar de omgeving — Votulast, de wijk van Vogelenbuurt, Tuinwijk
+en Lauwerecht — heeft de hoogste dichtheid aan straatkunst van Utrecht buiten de binnenstad. Binnen
+een paar honderd meter vind je de Draaiweg, de Adelaarstraat en de Grietstraat.</p>
+<p>Jordan werkt met acryl en spuitbus door elkaar heen, waardoor het werk van dichtbij ruwer oogt dan
+van de overkant van de straat.</p>`,
     text:"Teddyberen, raketten en fantasiedieren tussen het gebladerte, op een donkere ondergrond." },
 
   { title:"Night Tour", artist:"Aafke Bouman", year:2022, place:"Molenstraat, binnenstad",
+    more:`<p>Gemaakt in 2022 voor Utrecht 900, het jaar waarin de stad vierde dat ze in 1122 stadsrechten kreeg
+van keizer Hendrik V. Aafke Bouman liet zich inspireren door de ommetjes die mensen tijdens de
+lockdowns 's avonds gingen maken — een van de weinige dingen die toen nog mocht, en waardoor veel
+Utrechters hun eigen binnenstad opeens leeg en stil zagen.</p>
+<p>De Molenstraat ligt vlak bij de Plompetorengracht, in het rustige noordelijke stuk van de
+binnenstad.</p>
+<p>Utrecht 900 leverde in 2022 een reeks kunstwerken en evenementen op door de hele stad. Dat de
+stadsrechten van 1122 nu precies de verjaardag zijn, is overigens een keuze: er woonden hier al sinds
+de Romeinen mensen, en het castellum Traiectum lag onder het huidige Domplein.</p>`,
     lat:52.096333, lng:5.124610,
     text:"Ontstaan uit de nachtelijke ommetjes van de lockdown, gemaakt voor Utrecht 900." },
 
   { title:"Kind met ruiter", artist:"Collectief De Strakke Hand", year:"2019–2021", place:"Pijperlaan, Oog in Al",
+    more:`<p>Een meters hoge muurschildering op de zijgevel van Hotel Ibis aan de Pijperlaan, van collectief De
+Strakke Hand — hetzelfde gezelschap dat de Slapende Mars, de Luitspeler en verschillende
+muurformules maakte.</p>
+<p>Oog in Al is een wijk uit de jaren dertig, gebouwd op het voormalige landgoed Oog in Al aan het
+Merwedekanaal. De naam zou komen van een buitenplaats met uitzicht over alles — al bestaan er
+meerdere verklaringen.</p>
+<p>De Strakke Hand is opgericht in Utrecht en werkt door heel Nederland. Het collectief is gespecialiseerd
+in het uitvergroten van bestaande schilderijen naar gevelformaat — handwerk met de kwast, waarbij het
+origineel in een raster wordt opgedeeld en vierkant voor vierkant wordt overgezet. Aan een gevel als
+deze wordt maanden gewerkt, in etappes, afhankelijk van het weer.</p>`,
     lat:52.081862, lng:5.089262,
     text:"Meters hoog tegen de zijgevel van Hotel Ibis.",
-    photo:{src:COMMONS+"7/78/Muurschildering_kind_met_ruiter_-_Hotel_Ibis_Utrecht%2C_Pijperlaan_-_Collectief_De_Strakke_Hand%2C_2019_-_2021%2C_01.jpg/1024px-Muurschildering_kind_met_ruiter_-_Hotel_Ibis_Utrecht%2C_Pijperlaan_-_Collectief_De_Strakke_Hand%2C_2019_-_2021%2C_01.jpg",
+    photo:{src:COMMONS+"7/78/Muurschildering_kind_met_ruiter_-_Hotel_Ibis_Utrecht%2C_Pijperlaan_-_Collectief_De_Strakke_Hand%2C_2019_-_2021%2C_01.jpg/1280px-Muurschildering_kind_met_ruiter_-_Hotel_Ibis_Utrecht%2C_Pijperlaan_-_Collectief_De_Strakke_Hand%2C_2019_-_2021%2C_01.jpg",
       by:"Hans Muller", lic:"CC BY-SA 4.0",
       page:"https://commons.wikimedia.org/wiki/File:Muurschildering_kind_met_ruiter_-_Hotel_Ibis_Utrecht,_Pijperlaan_-_Collectief_De_Strakke_Hand,_2019_-_2021,_01.jpg"} },
 
   { title:"De Fluitspeler", place:"Dorbeendreef, Overvecht", lat:52.112083, lng:5.115104,
+    more:`<p>Het slotstuk van de reeks waarin Utrechtse meesters uit de zeventiende eeuw op flatformaat werden
+uitvergroot. De fluitspeler is een typisch motief van de Utrechtse caravaggisten: half figuurstuk,
+half muziekscene, met een sterk licht dat van opzij komt.</p>
+<p>Overvecht is gebouwd in de jaren zestig volgens de idealen van licht, lucht en ruimte, met lange
+galerijflats in open groen. Die kopgevels zijn tien verdiepingen hoog en vrijwel blind — het grootste
+beschikbare doek van de stad, en de afgelopen jaren consequent gebruikt.</p>
+<p>De reeks heette <em>Geef Utrechtse Meesters een gezicht</em> en bracht schilderijen die normaal in
+het Centraal Museum hangen naar de wijken waar de meeste mensen nooit een museum binnenstappen. Dat de
+laatste in Overvecht landde, was een bewuste keuze.</p>`,
     text:"Het slotstuk van de reeks Utrechtse Meesters, uitvergroot tegen een flat in Overvecht.",
-    photo:{src:COMMONS+"c/cb/Geef_Utrechtse_Meesters_een_gezicht_-_De_fluitspeler.jpg/1024px-Geef_Utrechtse_Meesters_een_gezicht_-_De_fluitspeler.jpg",
+    photo:{src:COMMONS+"c/cb/Geef_Utrechtse_Meesters_een_gezicht_-_De_fluitspeler.jpg/1280px-Geef_Utrechtse_Meesters_een_gezicht_-_De_fluitspeler.jpg",
       by:"Kattenkruid", lic:"CC BY-SA 4.0",
       page:"https://commons.wikimedia.org/wiki/File:Geef_Utrechtse_Meesters_een_gezicht_-_De_fluitspeler.jpg"} },
 
   { title:"De Luitspeler", artist:"Collectief De Strakke Hand", place:"Spaaklaan, Kanaleneiland",
+    more:`<p>Dirck van Baburen schilderde <em>De luitspeler</em> in 1622. Ook hij hoorde bij de Utrechtse
+caravaggisten en was net terug uit Rome; zijn muzikanten en speelkaartspelers zijn van dichtbij
+geschilderd, met een directheid die toen nieuw was.</p>
+<p>De muurversie staat in Kanaleneiland, een wijk uit de late jaren vijftig aan de overkant van het
+Amsterdam-Rijnkanaal. Het contrast tussen een zeventiende-eeuwse luitspeler en een naoorlogse
+galerijflat is precies waar de reeks het van moet hebben.</p>
+<p>Van Baburen stierf al in 1624, nog geen dertig jaar oud, maar zijn werk bleef doorwerken: Vermeer
+schilderde later twee keer een Van Baburen aan de muur in zijn eigen interieurs. De Spaaklaan ligt in
+Kanaleneiland-Noord, een buurt die net als Overvecht de laatste jaren flink is opgeknapt.</p>`,
     lat:52.077279, lng:5.088726,
     text:"Dirck van Baburens <em>Luitspeler</em> (1622), op flatformaat." },
 
   { title:"Toeslag af.", artist:"Jan is de Man", place:"Taagdreef 2, Overvecht", lat:52.110561, lng:5.116632,
+    more:`<p>Een tekstmural op de kopgevel van een flat in Overvecht, van Jan Heinsbroek. Zoals vaker bij zijn
+tekstwerk is de boodschap kort en open genoeg om er zelf iets bij te denken.</p>
+<p>De dreven in Overvecht zijn vernoemd naar rivieren — Taag, Rubicon, Wolga, Neckar — en de flats
+staan er in lange, evenwijdige rijen. De wijk heeft de laatste jaren stevig ingezet op straatkunst om
+die herhaling te doorbreken.</p>
+<p>Overvecht telt zo'n 34.000 inwoners en was bij de oplevering in de jaren zestig het modernste stuk
+Utrecht: centrale verwarming, een balkon en uitzicht op groen, voor mensen die daarvoor in kleine
+binnenstadswoningen zaten. De wijk kampt inmiddels met andere problemen, en straatkunst is een van de
+middelen waarmee de gemeente en corporaties het straatbeeld proberen te keren.</p>`,
     text:"Tekst op de kopgevel van een flat in Overvecht." },
 
   { title:"Mural Kalymnosdreef", place:"Kalymnosdreef, Overvecht", lat:52.117465, lng:5.111612,
+    more:`<p>Gemaakt voor het eeuwfeest van De Stijl in 2017. De Stijl werd in 1917 in Leiden opgericht door Theo
+van Doesburg, met Mondriaan als bekendste schilder — primaire kleuren, rechte hoeken, verder niets.</p>
+<p>Utrecht heeft er een bijzondere band mee door Gerrit Rietveld, die hier zijn Rietveld Schröderhuis
+bouwde (1924), het enige gebouw dat de principes van De Stijl helemaal doorvoert en inmiddels
+UNESCO-werelderfgoed is. Een strak geometrisch werk op een flat in Overvecht is daar een logisch
+vervolg op.</p>
+<p>Van Doesburg werd in Utrecht geboren, in 1883 aan de Kleine Singel. De beweging viel na zijn dood in
+1931 snel uit elkaar, maar de beeldtaal — rood, geel, blauw, zwarte lijnen — is zo herkenbaar
+gebleven dat je hem op een flatgevel van honderd meter afstand al thuisbrengt.</p>`,
     text:"Gemaakt voor het eeuwfeest van De Stijl." },
 
   { title:"Mural Croeselaan", artist:"Munir de Vries", place:"Croeselaan, hoek Van Zijstweg",
+    more:`<p>Honderdnegentig vierkante meter met verhalen van bewoners uit de Dichterswijk: de mural werd gemaakt
+na gesprekken in de buurt, waarbij bewoners aandroegen wat erop moest komen. Dat leverde een collage
+op van herkenbare gebouwen en persoonlijke fragmenten.</p>
+<p>De versie uit 2017 is er niet meer — Munir de Vries heeft in 2024 op dezelfde muur nieuw werk
+gemaakt. Dat hoort bij dit soort plekken: de Croeselaan en het hele Beurskwartier zijn al jaren in
+verbouwing, en muren die vandaag beschilderd zijn kunnen volgend jaar tegen de grond gaan.</p>
+<p>Op de Croeselaan zelf staat sinds de herinrichting het Beeldenpark: kunstwerken die eerder elders in
+de stad stonden en om uiteenlopende redenen niet zijn teruggeplaatst, onder meer uit de collecties van
+de gemeente en de Rabobank, die hier haar hoofdkantoor heeft.</p>`,
     lat:52.083680, lng:5.107356,
     text:"190 vierkante meter vol verhalen van bewoners uit de Dichterswijk. Het origineel uit 2017 is inmiddels vervangen door nieuw werk van dezelfde maker." }
 ];
@@ -574,47 +919,46 @@ document.getElementById('themeBtn').addEventListener('click', ()=>{
 /* ========================== map ========================== */
 const map = L.map('map', { scrollWheelZoom:true, zoomControl:true });
 
-/* Kaartlagen. CARTO staat hotlinken toe en werkt ook als je index.html
-   rechtstreeks vanaf schijf opent; tile.openstreetmap.org geeft dan vaak een
-   403 omdat het verzoek geen herkomst meebrengt. OSM blijft de reservelaag. */
-const ATTR_CARTO = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' +
-                   ' &middot; &copy; <a href="https://carto.com/attributions">CARTO</a>';
-const ATTR_OSM   = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+/* Kaartlaag: OpenStreetMap. Let op: tile.openstreetmap.org weigert verzoeken
+   zonder herkomst, dus vanaf een dubbelgeklikte file:// pagina krijg je 403.
+   Serveer 'm lokaal (python -m http.server) of bekijk 'm op GitHub Pages. */
+const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom:19,
+  attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-bijdragers'
+}).addTo(map);
 
-const TILE_SOURCES = [
-  { id:'carto',
-    light:'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-    dark :'https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png',
-    opts :{ subdomains:'abcd', maxZoom:20, attribution:ATTR_CARTO } },
-  { id:'osm',
-    light:'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-    dark :'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-    opts :{ maxZoom:19, attribution:ATTR_OSM } }
-];
-
-let sourceIndex = 0, tiles = null, tileErrors = 0;
-
-function buildTiles(){
-  const src = TILE_SOURCES[sourceIndex];
-  const url = currentTheme()==='dark' ? src.dark : src.light;
-  if(tiles) map.removeLayer(tiles);
-  tileErrors = 0;
-  tiles = L.tileLayer(url, src.opts).addTo(map);
-  tiles.on('tileerror', ()=>{
-    // Genoeg mislukte tegels achter elkaar? Val terug op de volgende bron.
-    if(++tileErrors >= 4 && sourceIndex < TILE_SOURCES.length-1){
-      sourceIndex++;
-      console.warn('Kaartlaag onbereikbaar, terugvallen op', TILE_SOURCES[sourceIndex].id);
-      buildTiles();
-    }
-  });
+/* OSM heeft geen donkere variant, dus die draaien we zelf om. */
+function applyTileTheme(){
+  const pane = map.getPane('tilePane');
+  if(pane) pane.classList.toggle('tiles-dark', currentTheme()==='dark');
 }
-function applyTileTheme(){ buildTiles(); }
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTileTheme);
 
+/* De echte looproute, straat voor straat. Vooraf uitgerekend met Valhalla
+   (de routeservice die OpenStreetMap zelf draait, profiel 'pedestrian') en
+   hier ingebakken, zodat de pagina bij het openen geen routeserver nodig heeft.
+   Codering: delta's in stappen van 1e-5 graad, lat/lon om en om. */
+const ROUTE_PATH_ENC = '5209700,512695,-45,-23,-37,-23,-22,-8,-34,-2,-53,14,-2,-9,-4,-5,-4,-42,-12,2,-5,-2,-16,2,-4,-22,-6,-6,-17,-7,-60,-16,-79,0,1,-21,-4,-1,-41,-34,-43,-29,-62,-23,-5,-101,-42,21,-53,32,-9,3,-10,1,-23,-3,-6,-6,-2,-12,-69,16,-43,21,-29,-145,-136,93,-104,65,-2,-8,-6,-26,-19,11,-4,-1,-3,-9,-8,3,0,8,-3,2,-17,-65,-30,21,-18,-75,-55,24,-64,19,-53,8,-57,3,-15,3,-29,12,-6,-27,6,27,15,-7,-6,-33,6,33,29,-8,57,-3,53,-8,64,-19,55,-24,-4,-49,17,-8,99,-34,7,-3,6,49,137,-47,69,-31,19,104,37,177,60,-33,37,-10,-37,10,-60,33,-56,-273,-4,-47,13,-3,54,-24,-16,-75,-18,11,-6,-2,-9,-47,-9,-39,1,-4,22,-15,-13,-50,15,-13,77,-83,14,-12,11,40,11,41,-19,13,5,20,43,-30,42,-21,25,-10,-4,-83,38,2,40,6,4,-3,6,-35,20,-38,8,-9,8,-3,29,3,25,10,10,-94,-10,94,13,3,29,-2,37,-11,11,-9,44,-14,32,-4,60,5,50,-4,33,-12,45,-22,6,-7,8,34,13,-6,4,20,2,25,-3,95,30,-1,-3,194,5,26,6,11,20,20,38,28,15,7,9,13,1,8,14,-1,34,31,-10,151,-3,84,-15,-2,-4,4,4,-4,69,10,-3,40,7,1,3,6,11,49,5,7,0,2,19,8,18,62,10,25,14,2,0,53,23,109,25,98';
+const ROUTE_KM  = 6.09;   // gelopen afstand volgens Valhalla
+const ROUTE_MIN = 73;     // looptijd volgens Valhalla, exclusief kijken
+
+function decodePath(enc){
+  const n = enc.split(',');
+  const out = []; let lat = 0, lon = 0;
+  for(let i = 0; i < n.length; i += 2){
+    lat += +n[i]; lon += +n[i+1];
+    out.push([lat/1e5, lon/1e5]);
+  }
+  return out;
+}
+const routePath = decodePath(ROUTE_PATH_ENC);
 const routeLatLngs = ROUTE.map(s=>[s.lat, s.lng]);
-L.polyline(routeLatLngs, {
-  color:'#d7451f', weight:3.5, opacity:.55, dashArray:'1 7', lineCap:'round'
+
+L.polyline(routePath, {          // witte onderlaag, zodat de lijn op elke kaart leesbaar blijft
+  color:'#ffffff', weight:7, opacity:.55, lineCap:'round', lineJoin:'round'
+}).addTo(map);
+L.polyline(routePath, {
+  color:'#d7451f', weight:4, opacity:.95, lineCap:'round', lineJoin:'round'
 }).addTo(map);
 
 const markers = [];
@@ -651,18 +995,21 @@ EXTRAS.forEach((stop,i)=>{
   extraLayer.addLayer(m);
 });
 
-map.fitBounds(L.latLngBounds(routeLatLngs).pad(0.12));
+map.fitBounds(L.latLngBounds(routePath).pad(0.08));
 applyTileTheme();
 
 /* ========================== render list ========================== */
 function photoBlock(p){
   if(!p) return '';
-  return `<figure class="shot">
-      <img src="${p.src}" alt="" loading="lazy" decoding="async"
-           onerror="this.closest('.shot').remove()">
-      <figcaption class="credit">Foto: ${esc(p.by)} · ${esc(p.lic)} ·
-        <a href="${p.page}" target="_blank" rel="noopener">Wikimedia Commons</a></figcaption>
-    </figure>`;
+  const list = Array.isArray(p) ? p : [p];
+  const figs = list.map(x => `
+      <figure class="shot${x.span ? ' span' : ''}"${x.ratio ? ` style="--ar:${x.ratio}"` : ''}>
+        <img src="${x.src}" alt="${esc(x.alt || '')}" loading="lazy" decoding="async"
+             onerror="this.closest('.shot').remove()">
+        <figcaption class="credit">Foto: ${esc(x.by)} · ${esc(x.lic)} ·
+          <a href="${x.page}" target="_blank" rel="noopener">Wikimedia Commons</a></figcaption>
+      </figure>`).join('');
+  return `<div class="shots${list.length > 1 ? ' multi' : ''}">${figs}</div>`;
 }
 function linkBlock(stop){
   const q = encodeURIComponent(stop.lat+','+stop.lng);
@@ -694,6 +1041,10 @@ function cardHTML(stop, i, kind){
         ${tags.length?'<div class="tagrow">'+tags.join('')+'</div>':''}
       </div>
       ${photoBlock(stop.photo)}
+      ${stop.more ? `<details class="more">
+        <summary>Achtergrond</summary>
+        <div class="more-body">${stop.more}</div>
+      </details>` : ''}
       ${linkBlock(stop)}
     </article>`;
 }
@@ -721,18 +1072,19 @@ function focusStop(i, opt={}){
 }
 
 document.getElementById('stops').addEventListener('click', e=>{
-  if(e.target.closest('a')) return;
+  if(e.target.closest('a') || e.target.closest('.more')) return;
   const card = e.target.closest('.stop'); if(!card) return;
   focusStop(+card.dataset.i);
 });
 document.getElementById('stops').addEventListener('keydown', e=>{
   if(e.key!=='Enter' && e.key!==' ') return;
+  if(e.target.closest('.more')) return;
   const card = e.target.closest('.stop'); if(!card) return;
   e.preventDefault(); focusStop(+card.dataset.i);
 });
 
 document.getElementById('extras').addEventListener('click', e=>{
-  if(e.target.closest('a')) return;
+  if(e.target.closest('a') || e.target.closest('.more')) return;
   const card = e.target.closest('.stop'); if(!card) return;
   const s = EXTRAS[+card.dataset.i];
   map.flyTo([s.lat, s.lng], 16, {duration:.7});
@@ -750,12 +1102,9 @@ extraBtn.addEventListener('click', ()=>{
 });
 
 /* ========================== stats ========================== */
-const km = routeLength(ROUTE);
-const walkKm = km*1.25;                 // straatjes lopen nooit hemelsbreed
 document.getElementById('stat-stops').textContent = ROUTE.length;
-document.getElementById('stat-km').textContent = walkKm.toFixed(1).replace('.',',');
-document.getElementById('stat-time').textContent =
-  Math.round(walkKm/4.5*60/5)*5 + ' min';
+document.getElementById('stat-km').textContent = ROUTE_KM.toFixed(1).replace('.',',');
+document.getElementById('stat-time').textContent = Math.round(ROUTE_MIN/5)*5 + ' min';
 </script>
 </body>
 </html>

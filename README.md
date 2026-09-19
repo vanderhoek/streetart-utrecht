@@ -4,7 +4,7 @@ De street art wandeling voor **De Nood-Familiedag 2026**, zondag 20 september.
 Start op de **Wittevrouwensingel 71**, eindigt bij **En Public** aan het Griftpark,
 met halverwege koffie bij **Geogap** aan de Nieuwegracht.
 
-11 stops, ±5,7 km, ruim een uur lopen. Daarnaast 20 extra's elders in de stad,
+11 stops, 6,1 km, ruim vijf kwartier lopen (looproute, door Valhalla uitgerekend). Daarnaast 20 extra's elders in de stad,
 waaronder een zijlus door de Watervogelbuurt (+1,8 km) langs de KBTR op een gans.
 
 Alles zit in één bestand: `index.html`. Geen build, geen npm, geen framework.
@@ -12,7 +12,9 @@ Dubbelklikken is genoeg.
 
 ## Wat zit erin
 
-- Interactieve kaart (Leaflet + OpenStreetMap) met genummerde markers en de route als stippellijn
+- Interactieve kaart (Leaflet + OpenStreetMap) met genummerde markers en de **echte looproute**,
+  straat voor straat — vooraf uitgerekend met Valhalla en in de pagina gebakken, dus geen routeserver nodig
+- Per stop een uitklapbare achtergrondtekst van 100–200 woorden
 - Kaart en lijst praten met elkaar: klik een kaart-marker → de beschrijving scrollt in beeld, klik een stop → de kaart vliegt ernaartoe
 - Foto's van Wikimedia Commons, met fotograaf en licentie onder elke foto
 - Een uitklapbare lijst met street art elders in de stad (Ondiep, Pijlsweerd, Overvecht, Kanaleneiland, Lombok)
@@ -34,15 +36,29 @@ Een stop ziet er zo uit:
   approx: true,                    // optioneel: toont 'locatie bij benadering'
   tags: ["straatpoëzie"],          // optioneel
   list: ["meerdere werken", "op één plek"],  // optioneel
-  photo: {                         // optioneel
-    src: "https://...", by: "Fotograaf", lic: "CC BY 2.0", page: "https://commons.wikimedia.org/..."
+  more: `<p>100-200 woorden achtergrond, uitklapbaar in de kaart.</p>`,
+  photo: {                         // optioneel; mag ook een array van meerdere foto's zijn
+    src: "https://...", by: "Fotograaf", lic: "CC BY 2.0", alt: "...",
+    ratio: "16/9",                 // optioneel, standaard 4/3
+    span: true,                    // optioneel: volle breedte in een raster van meerdere foto's
+    page: "https://commons.wikimedia.org/..."
   }
 }
 ```
 
-De volgorde van `ROUTE` bepaalt de nummering, de lijn op de kaart én de afstand —
-die wordt bij het laden uitgerekend, dus je hoeft de kilometers nergens bij te werken.
-`kind: "terminus"` maakt van een stop een groen start- of eindpunt.
+De volgorde van `ROUTE` bepaalt de nummering. `kind: "terminus"` maakt van een stop een groen
+start- of eindpunt.
+
+⚠️ Let op: de gelopen route staat los van de stoplijst. Verander je de volgorde of voeg je een stop toe,
+dan klopt `ROUTE_PATH_ENC` (de ingebakken straatgeometrie) en `ROUTE_KM` / `ROUTE_MIN` niet meer.
+Die haal je opnieuw op bij Valhalla, profiel `pedestrian`:
+
+```
+https://valhalla1.openstreetmap.de/route?json={"locations":[{"lat":..,"lon":..},...],"costing":"pedestrian"}
+```
+
+De `shape` per leg is een polyline met precisie 6; decodeer die en zet 'm om naar de delta-codering
+die `decodePath()` in de pagina verwacht (lat/lon om en om, in stappen van 1e-5 graad).
 
 ### Eigen foto's gebruiken
 
@@ -54,7 +70,8 @@ photo: { src: "photos/kbtr.jpg", by: "Luuk van der Hoek", lic: "eigen foto", pag
 
 ## Lokaal draaien
 
-`index.html` openen in je browser volstaat. Wil je 'm serveren:
+⚠️ **Niet dubbelklikken.** `tile.openstreetmap.org` weigert verzoeken zonder herkomst, dus vanaf een
+`file://`-pagina krijg je 403's in plaats van kaarttegels. Serveer 'm lokaal:
 
 ```bash
 python -m http.server 8000
@@ -69,6 +86,8 @@ De site staat op <https://vanderhoek.github.io/streetart-utrecht/>.
 ## Bronnen en credits
 
 - Kaart: [OpenStreetMap](https://www.openstreetmap.org/copyright)-bijdragers, via [Leaflet](https://leafletjs.com)
+- Looproute: [Valhalla](https://valhalla1.openstreetmap.de), de routeservice van OpenStreetMap
+- Achtergrond bij de muurformules: [Utrechtse muurformules](https://muurformules.sites.uu.nl/), Universiteit Utrecht
 - Foto's: Wikimedia Commons — fotograaf en licentie staan bij elke foto in de app
 - Routegegevens: de [Street Art wandeling van Wij Wandelen](https://www.wij-wandelen.nl/street-art-wandeling-in-utrecht/),
   de [Street Art route van Ontdek Utrecht](https://www.ontdek-utrecht.nl/route/67841/street-art-route)
