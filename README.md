@@ -6,7 +6,7 @@ met tegen het eind een rondleiding bij **Geogap** aan de Nieuwegracht.
 De route loopt tegen de klok in: eerst westwaarts langs Vogelenbuurt en Pijlsweerd,
 dan zuid de binnenstad in, en via de Nieuwegracht weer omhoog.
 
-13 stops, 6,2 km, ruim vijf kwartier lopen (looproute, door Valhalla uitgerekend). Daarnaast 20 extra's elders in de stad,
+13 stops, 6,37 km, ruim vijf kwartier lopen (looproute, door Valhalla uitgerekend). Daarnaast 21 extra's elders in de stad,
 waaronder een zijlus door de Watervogelbuurt (+1,8 km) langs de KBTR op een gans.
 
 Alles zit in één bestand: `index.html`. Geen build, geen npm, geen framework — wel even
