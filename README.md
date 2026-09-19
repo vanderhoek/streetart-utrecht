@@ -18,7 +18,10 @@ lokaal serveren in plaats van dubbelklikken, zie *Lokaal draaien*.
 - Kaart en lijst praten met elkaar: klik een kaart-marker → de beschrijving scrollt in beeld, klik een stop → de kaart vliegt ernaartoe
 - Foto's van Wikimedia Commons, met fotograaf en licentie onder elke foto
 - Een uitklapbare lijst met street art elders in de stad (Ondiep, Pijlsweerd, Overvecht, Kanaleneiland, Lombok)
-- Donker/licht thema, en een layout die op de telefoon onderweg gewoon werkt
+- **Je eigen positie op de kaart**: de browser vraagt bij het openen om locatie en zet een blauwe
+  stip met nauwkeurigheidscirkel neer, die meeloopt. Het richtkruis rechtsboven op de kaart zet
+  ’m aan/uit en vliegt naar je toe. Werkt alleen op https — dus op de gepubliceerde site, niet vanaf schijf
+- Donker/licht thema, en een layout die op de telefoon onderweg gewoon werkt (getest op 320–430 px)
 
 ## De route aanpassen
 
