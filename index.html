@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>De Nood-Familiedag 2026 — Street Art Utrecht</title>
+<meta name="description" content="De Nood-Familiedag 2026, zondag 20 september — street art wandeling door Utrecht. Van de Wittevrouwensingel naar En Public in het Griftpark: 11 stops, ruim 5 km.">
+<meta name="theme-color" content="#14110f">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+
+<style>
+  :root{
+    --bg:#faf7f2;
+    --surface:#ffffff;
+    --surface-2:#f2ede4;
+    --ink:#1b1714;
+    --ink-2:#5c5349;
+    --ink-3:#8b8177;
+    --line:#e3dad0;
+    --accent:#d7451f;
+    --accent-2:#1f6f6b;
+    --accent-soft:#fbe6df;
+    --shadow:0 1px 2px rgba(27,23,20,.06), 0 8px 24px -12px rgba(27,23,20,.18);
+    --radius:14px;
+    --maxw:1360px;
+    --header-h:64px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14110f;
+      --surface:#1e1a17;
+      --surface-2:#262019;
+      --ink:#f5efe7;
+      --ink-2:#bdb2a5;
+      --ink-3:#8a7f73;
+      --line:#332b25;
+      --accent:#ff6a3d;
+      --accent-2:#4fb3ad;
+      --accent-soft:#3a201a;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -14px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14110f; --surface:#1e1a17; --surface-2:#262019; --ink:#f5efe7;
+    --ink-2:#bdb2a5; --ink-3:#8a7f73; --line:#332b25; --accent:#ff6a3d;
+    --accent-2:#4fb3ad; --accent-soft:#3a201a;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -14px rgba(0,0,0,.7);
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    font-size:16px; line-height:1.55; -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit}
+  h1,h2,h3{line-height:1.2; margin:0; letter-spacing:-.02em}
+  button{font:inherit; color:inherit}
+
+  /* ---------- header ---------- */
+  header.top{
+    position:sticky; top:0; z-index:1200;
+    background:color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter:saturate(1.3) blur(12px);
+    border-bottom:1px solid var(--line);
+  }
+  .top-inner{
+    max-width:var(--maxw); margin:0 auto; height:var(--header-h);
+    padding:0 16px; display:flex; align-items:center; gap:14px;
+  }
+  .brand{display:flex; align-items:baseline; gap:10px; min-width:0}
+  .brand h1{font-size:1.06rem; font-weight:680; white-space:nowrap}
+  .brand .sub{color:var(--ink-3); font-size:.8rem; white-space:nowrap;
+    overflow:hidden; text-overflow:ellipsis}
+  .spacer{flex:1}
+  .stats{display:flex; gap:6px; align-items:center}
+  .pill{
+    background:var(--surface-2); border:1px solid var(--line); color:var(--ink-2);
+    border-radius:999px; padding:4px 11px; font-size:.76rem; font-weight:560;
+    white-space:nowrap;
+  }
+  .pill b{color:var(--ink); font-weight:680}
+  .iconbtn{
+    background:var(--surface-2); border:1px solid var(--line); border-radius:10px;
+    width:36px; height:36px; display:grid; place-items:center; cursor:pointer;
+    transition:background .15s, border-color .15s;
+  }
+  .iconbtn:hover{background:var(--accent-soft); border-color:var(--accent)}
+
+  /* ---------- familiedag ---------- */
+  .fam{
+    display:inline-block; background:var(--accent); color:#fff;
+    font-size:.68rem; font-weight:740; letter-spacing:.1em; text-transform:uppercase;
+    padding:4px 10px; border-radius:999px; white-space:nowrap;
+  }
+  .hero{
+    background:
+      radial-gradient(1200px 300px at 12% -60%, color-mix(in srgb,var(--accent) 26%, transparent), transparent 70%),
+      radial-gradient(900px 280px at 92% -40%, color-mix(in srgb,var(--accent-2) 24%, transparent), transparent 70%),
+      var(--surface);
+    border-bottom:1px solid var(--line);
+  }
+  .hero-inner{
+    max-width:var(--maxw); margin:0 auto; padding:30px 16px 26px; text-align:center;
+  }
+  .kicker{
+    margin:0 0 10px; font-size:.82rem; font-weight:780; letter-spacing:.22em;
+    text-transform:uppercase; color:var(--accent);
+  }
+  .kicker .spark{opacity:.5; letter-spacing:0; font-size:.7em; vertical-align:2px}
+  .hero h2{
+    font-size:clamp(1.9rem, 5.2vw, 3.1rem); font-weight:750; letter-spacing:-.035em;
+    margin:0 0 12px;
+  }
+  .hero .lede{
+    margin:0 auto; max-width:60ch; color:var(--ink-2); font-size:1.02rem;
+  }
+  .hero .lede strong{color:var(--ink); font-weight:650}
+  .hero-meta{
+    margin:16px 0 0; display:inline-block; color:var(--ink-2); font-size:.83rem;
+    background:var(--surface-2); border:1px solid var(--line); border-radius:999px;
+    padding:6px 15px;
+  }
+  @media (max-width:600px){
+    .hero-inner{padding:22px 16px 20px}
+    .kicker{font-size:.72rem; letter-spacing:.16em}
+    .hero .lede{font-size:.95rem}
+    .hero-meta{font-size:.78rem; line-height:1.45; border-radius:14px}
+  }
+
+  /* ---------- layout ---------- */
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:18px 16px 56px;
+    display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.05fr); gap:22px;
+    align-items:start;}
+  @media (max-width:1000px){ .wrap{grid-template-columns:1fr; gap:14px} }
+
+  /* ---------- map ---------- */
+  .mapcol{position:sticky; top:calc(var(--header-h) + 18px)}
+  @media (max-width:1000px){
+    .mapcol{position:sticky; top:var(--header-h); z-index:900; margin:0 -16px; padding:0}
+  }
+  #map{
+    height:calc(100vh - var(--header-h) - 54px); min-height:420px;
+    border-radius:var(--radius); border:1px solid var(--line); box-shadow:var(--shadow);
+    background:var(--surface-2);
+  }
+  @media (max-width:1000px){
+    #map{height:44vh; min-height:280px; border-radius:0; border-left:0; border-right:0}
+  }
+  .leaflet-container{font:inherit; background:var(--surface-2)}
+  :root[data-theme="dark"] .leaflet-tile-pane,
+  @media (prefers-color-scheme: dark){}
+  .tiles-dark{filter:invert(1) hue-rotate(180deg) brightness(.92) contrast(.9) saturate(.75)}
+
+  .num-marker{
+    display:grid; place-items:center; width:28px; height:28px; border-radius:50%;
+    background:var(--accent); color:#fff; font-size:.78rem; font-weight:700;
+    border:2px solid #fff; box-shadow:0 2px 6px rgba(0,0,0,.35);
+    transition:transform .18s cubic-bezier(.34,1.56,.64,1);
+  }
+  .num-marker.terminus{background:var(--accent-2)}
+  .num-marker.extra{background:var(--ink-3); width:22px; height:22px; font-size:.66rem}
+  .num-marker.is-active{transform:scale(1.35); z-index:999}
+
+  .leaflet-popup-content-wrapper{
+    background:var(--surface); color:var(--ink); border-radius:12px;
+    border:1px solid var(--line); box-shadow:var(--shadow);
+  }
+  .leaflet-popup-tip{background:var(--surface); border:1px solid var(--line)}
+  .leaflet-popup-content{margin:10px 13px; font-size:.86rem}
+  .leaflet-popup-content b{display:block; font-size:.95rem; margin-bottom:2px}
+  .leaflet-popup-content span{color:var(--ink-3)}
+  .leaflet-control-attribution{background:color-mix(in srgb,var(--surface) 80%,transparent)!important;
+    color:var(--ink-3)!important; font-size:10px!important}
+  .leaflet-control-attribution a{color:var(--ink-2)!important}
+
+  /* ---------- intro ---------- */
+  .intro{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:18px 20px; box-shadow:var(--shadow); margin-bottom:16px;
+  }
+  .intro h2{font-size:1.28rem; margin-bottom:8px}
+  .intro p{margin:0 0 10px; color:var(--ink-2); font-size:.92rem}
+  .intro p:last-child{margin-bottom:0}
+  .route-line{
+    display:flex; flex-wrap:wrap; gap:8px 14px; margin-top:12px;
+    font-size:.82rem; color:var(--ink-2);
+  }
+  .route-line span{display:inline-flex; align-items:center; gap:6px}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+
+  /* ---------- section heads ---------- */
+  .sechead{
+    display:flex; align-items:center; gap:12px; margin:26px 2px 12px;
+  }
+  .sechead h3{font-size:.82rem; text-transform:uppercase; letter-spacing:.09em;
+    color:var(--ink-3); font-weight:700}
+  .sechead .rule{flex:1; height:1px; background:var(--line)}
+  .toggle{
+    background:var(--surface-2); border:1px solid var(--line); border-radius:999px;
+    padding:4px 12px; font-size:.76rem; font-weight:560; cursor:pointer; color:var(--ink-2);
+  }
+  .toggle:hover{border-color:var(--accent); color:var(--ink)}
+
+  /* ---------- stop cards ---------- */
+  .stops{display:flex; flex-direction:column; gap:10px}
+  .stop{
+    position:relative; display:grid; grid-template-columns:44px minmax(0,1fr);
+    gap:0 14px; background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--radius); padding:14px 16px 14px 14px; cursor:pointer;
+    box-shadow:var(--shadow); transition:border-color .16s, transform .16s;
+    scroll-margin-top:calc(var(--header-h) + 60vh);
+  }
+  @media(min-width:1001px){ .stop{scroll-margin-top:calc(var(--header-h) + 24px)} }
+  .stop:hover{border-color:color-mix(in srgb,var(--accent) 55%, var(--line))}
+  .stop.is-active{border-color:var(--accent); transform:translateX(2px)}
+  .stop.is-active::before{
+    content:""; position:absolute; left:-1px; top:14px; bottom:14px; width:3px;
+    border-radius:3px; background:var(--accent);
+  }
+  .badge{
+    width:32px; height:32px; border-radius:50%; display:grid; place-items:center;
+    background:var(--accent-soft); color:var(--accent); font-weight:700; font-size:.86rem;
+    border:1px solid color-mix(in srgb,var(--accent) 30%, transparent);
+  }
+  .stop.terminus .badge{background:color-mix(in srgb,var(--accent-2) 14%, transparent);
+    color:var(--accent-2); border-color:color-mix(in srgb,var(--accent-2) 35%, transparent)}
+  .stop.extra .badge{background:var(--surface-2); color:var(--ink-3); border-color:var(--line)}
+  .stop h4{margin:0 0 2px; font-size:1.02rem; font-weight:660; letter-spacing:-.01em}
+  .meta{font-size:.8rem; color:var(--ink-3); margin-bottom:8px}
+  .meta em{font-style:normal; color:var(--ink-2); font-weight:560}
+  .desc{font-size:.9rem; color:var(--ink-2); margin:0}
+  .desc ul{margin:7px 0 0; padding-left:18px}
+  .desc li{margin:3px 0}
+  .tagrow{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px}
+  .tag{font-size:.7rem; letter-spacing:.03em; text-transform:uppercase; font-weight:650;
+    color:var(--ink-3); background:var(--surface-2); border:1px solid var(--line);
+    border-radius:6px; padding:2px 7px}
+  .tag.warn{color:var(--accent); border-color:color-mix(in srgb,var(--accent) 35%,transparent);
+    background:var(--accent-soft)}
+
+  .shot{
+    grid-column:1/-1; margin:12px 0 0; border-radius:10px; overflow:hidden;
+    border:1px solid var(--line); background:var(--surface-2); position:relative;
+  }
+  .shot img{display:block; width:100%; height:auto; aspect-ratio:4/3; object-fit:cover}
+  .credit{
+    font-size:.68rem; color:var(--ink-3); padding:5px 9px; border-top:1px solid var(--line);
+    background:var(--surface);
+  }
+  .credit a{color:var(--ink-2)}
+
+  .links{grid-column:1/-1; display:flex; flex-wrap:wrap; gap:8px; margin-top:11px}
+  .lnk{
+    font-size:.78rem; font-weight:560; text-decoration:none; padding:5px 11px;
+    border-radius:8px; border:1px solid var(--line); background:var(--surface-2);
+    color:var(--ink-2); transition:border-color .15s, color .15s;
+  }
+  .lnk:hover{border-color:var(--accent); color:var(--ink)}
+
+  .leg{
+    display:flex; align-items:center; gap:8px; margin:0 0 0 16px; padding:2px 0;
+    color:var(--ink-3); font-size:.76rem;
+  }
+  .leg::before{content:""; width:1px; height:18px; background:var(--line); margin-left:15px}
+
+  footer{
+    max-width:var(--maxw); margin:0 auto; padding:0 16px 40px;
+    color:var(--ink-3); font-size:.78rem; border-top:1px solid var(--line);
+    padding-top:18px;
+  }
+  footer a{color:var(--ink-2)}
+  .hidden{display:none !important}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">
+      <span class="fam">De Nood-Familiedag 2026</span>
+      <h1>Street Art Utrecht</h1>
+    </div>
+    <div class="spacer"></div>
+    <div class="stats">
+      <span class="pill"><b id="stat-stops">–</b> stops</span>
+      <span class="pill"><b id="stat-km">–</b> km</span>
+      <span class="pill"><b id="stat-time">–</b></span>
+    </div>
+    <button class="iconbtn" id="themeBtn" title="Licht of donker" aria-label="Wissel tussen licht en donker">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <p class="kicker"><span class="spark">◆</span> De Nood-Familiedag 2026 <span class="spark">◆</span></p>
+    <h2>De street art wandeling</h2>
+    <p class="lede">Van de Wittevrouwensingel naar <strong>En Public</strong> in het Griftpark, langs de
+       mooiste muren van de stad. Elf stops, ruim vijf kilometer, en halverwege koffie bij Geogap.</p>
+    <p class="hero-meta"><strong>Zondag 20 september 2026</strong> · start Wittevrouwensingel 71 · 11 stops · ±5,7 km · ruim een uur lopen</p>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="mapcol">
+    <div id="map"></div>
+  </div>
+
+  <div class="listcol">
+    <section class="intro">
+      <h2>Langs de muren van Utrecht</h2>
+      <p>Van de Wittevrouwensingel via de Nieuwegracht en de werven naar de stegen achter de
+         Springweg, en dan rustig omhoog naar het Griftpark. Onderweg kom je een nijntje tegen,
+         een gedicht dat nooit af komt, vier werken in één achterafsteegje en een kerk die
+         allang gesloopt is maar gewoon weer op de gevel staat. Eindigen doe je op een terras.</p>
+      <p>Tik een stop aan en de kaart vliegt erheen; tik een nummer op de kaart en de
+         beschrijving schuift in beeld. Loopt de familie goed door en wil je er meer van maken:
+         onder <em>Elders in de stad</em> staat een lus door de Watervogelbuurt (+1,8 km),
+         met de KBTR op zijn gans.</p>
+      <p>Koffie bij <strong>Geogap</strong> zit halverwege, bij stop 6.</p>
+      <div class="route-line">
+        <span><i class="dot" style="background:var(--accent-2)"></i> start &amp; finish</span>
+        <span><i class="dot" style="background:var(--accent)"></i> stops op de route</span>
+        <span><i class="dot" style="background:var(--ink-3)"></i> extra's elders in de stad</span>
+      </div>
+    </section>
+
+    <div class="sechead">
+      <h3>De route</h3><div class="rule"></div>
+    </div>
+    <div class="stops" id="stops"></div>
+
+    <div class="sechead">
+      <h3>Elders in de stad</h3><div class="rule"></div>
+      <button class="toggle" id="extraBtn" aria-expanded="false">Toon 18 extra's</button>
+    </div>
+    <div class="stops hidden" id="extras"></div>
+  </div>
+</div>
+
+<footer>
+  <p>Gemaakt voor <strong>De Nood-Familiedag 2026</strong>, zondag 20 september.
+     Gemaakt met <a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a>, op kaarten
+     van <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>.
+     De foto's komen van Wikimedia Commons; wie ’m maakte en onder welke licentie staat onder elke foto.
+     De muren zelf zijn van hun makers — waar bekend staat de kunstenaar bij de stop.</p>
+  <p>De route leunt op de
+     <a href="https://www.wij-wandelen.nl/street-art-wandeling-in-utrecht/" target="_blank" rel="noopener">Street Art wandeling van Wij Wandelen</a>,
+     de <a href="https://www.ontdek-utrecht.nl/route/67841/street-art-route" target="_blank" rel="noopener">street art route van Ontdek Utrecht</a>
+     en <a href="https://www.discover-utrecht.com/collection/street-art/" target="_blank" rel="noopener">Discover Utrecht</a>.
+     Straatkunst is vluchtig — er kan er zomaar weer eentje overgeschilderd zijn. Staat er
+     <span class="tag warn" style="text-transform:none">locatie geschat</span> bij, dan klopt het plekje
+     op de kaart ongeveer, niet precies.</p>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+/* =========================================================================
+   DATA — pas hier de route aan. Elke stop:
+   { n, title, artist, year, place, lat, lng, text, photo?, approx?, kind? }
+   kind: "terminus" voor start/finish.
+   ========================================================================= */
+
+const COMMONS = "https://upload.wikimedia.org/wikipedia/commons/thumb/";
+
+const ROUTE = [
+  {
+    title:"Start — Wittevrouwensingel 71",
+    place:"Wittevrouwensingel 71", lat:52.096966, lng:5.127116, kind:"terminus",
+    text:"Hier begin je. De singel af, bij de Wittevrouwenbrug de stad in, en dan dwars door de binnenstad naar beneden richting de Lange Nieuwstraat."
+  },
+  {
+    title:"Nijntje", place:"Lange Nieuwstraat", lat:52.086183, lng:5.124183,
+    text:"Utrechts bekendste inwoner, teruggebracht tot een paar lijnen op een muur in de Lange Nieuwstraat — een straat of wat van het nijntje museum vandaan.",
+    photo:{
+      src:COMMONS+"3/3c/Miffy_street_art%2C_Lange_Nieuwstraat%2C_Utrecht_2024-11-28.jpg/1024px-Miffy_street_art%2C_Lange_Nieuwstraat%2C_Utrecht_2024-11-28.jpg",
+      by:"Andy Li", lic:"CC0",
+      page:"https://commons.wikimedia.org/wiki/File:Miffy_street_art,_Lange_Nieuwstraat,_Utrecht_2024-11-28.jpg"
+    }
+  },
+  {
+    title:"D'Oude Tolsteech-Poort", artist:"Jos Peeters", place:"Wijde Watersteeg",
+    lat:52.082308, lng:5.123277,
+    text:"Geen spuitbus maar penseel. Een oud-Hollands stadsgezicht van de Tolsteegpoort, die hier ooit stond, in dezelfde stijl als het werk dat Peeters aan de Vaartsche Rijn maakte."
+  },
+  {
+    title:"De blusemmers", place:"Nauwe Watersteeg", lat:52.082459, lng:5.123152,
+    text:"Het smalste steegje van de route. Op de muur sjouwen buurtbewoners emmers water naar een brand — uit de tijd dat blussen nog een kwestie was van de hele straat uit bed."
+  },
+  {
+    title:"De Letters van Utrecht", place:"Oudegracht, t.h.v. nr. 279", lat:52.086208, lng:5.121890,
+    text:"Een gedicht dat nooit af komt, letter voor letter in de klinkers gehakt. Elke zaterdag tussen 13.00 en 14.00 uur zit er een steenhouwer op zijn knieën om er één bij te beitelen. In dit tempo staat het gedicht pas rond 2080 bij het Ledig Erf.",
+    tags:["straatpoëzie","elke zaterdag 13–14 uur"]
+  },
+  {
+    title:"Koffie bij Geogap", artist:"Geogap B.V.", place:"Nieuwegracht 2B",
+    lat:52.089950, lng:5.124105,
+    text:"Halverwege, aan de Nieuwegracht vlak bij de Pausdam. Even zitten en koffie, en dan het tweede deel door de stegen achter de Springweg."
+  },
+  {
+    title:"Strosteeg", place:"Strosteeg, rond parkeergarage Springweg", lat:52.088545, lng:5.119842,
+    text:"Een achterafsteeg achter parkeergarage Springweg, van onder tot boven ingepikt door straatkunst. Vier werken op een rij:",
+    list:[
+      "<em>Dr. Caroline Bleeker</em> — de Utrechtse natuurkundige die hier haar eigen optische fabriek opbouwde",
+      "<em>No crying over spilled milk, Honey</em> — van Pipsqueak was here!!!",
+      "Een Utrechts tafereel over de volle breedte van de steeg",
+      "<em>Lof der Keramiek</em> — drie tegeltableaus, een knipoog naar kunstkeramiekfabriek St. Lukas en pottenbakkerij De Vier Paddestoelen, die hier ooit zaten"
+    ]
+  },
+  {
+    title:"De Mariakerk", year:2021, place:"Mariaplaats / Maria Majorplein",
+    lat:52.089731, lng:5.118083,
+    text:"De Mariakerk is in de negentiende eeuw afgebroken. Deze schildering zet ’m terug op zijn plek, zodat je vanaf het plein alsnog tegen de kerk aankijkt."
+  },
+  {
+    title:"Mural Zakkendragerssteeg", place:"Zakkendragerssteeg, binnenstad",
+    lat:52.092638, lng:5.115770,
+    text:"Nog één steeg, en dan loop je de binnenstad uit.",
+    photo:{
+      src:COMMONS+"c/cf/Mural_-_Zakkendragerssteeg_Utrecht_%2833452499258%29.jpg/1024px-Mural_-_Zakkendragerssteeg_Utrecht_%2833452499258%29.jpg",
+      by:"FaceMePLS", lic:"CC BY 2.0",
+      page:"https://commons.wikimedia.org/wiki/File:Mural_-_Zakkendragerssteeg_Utrecht_(33452499258).jpg"
+    }
+  },
+  {
+    title:"Muurschildering Grietstraat", artist:"Vijftien studenten, o.l.v. Lisette Jansen",
+    place:"Grietstraat 1, Vogelenbuurt", lat:52.097789, lng:5.123470,
+    text:"Laatste muur voor het park, en eentje die precies op de route ligt: vijftien studenten hebben hem samen geschilderd, ieder een stuk."
+  },
+  {
+    title:"Finish — En Public", place:"Blauwkapelseweg 30, Griftpark",
+    lat:52.099887, lng:5.127957, kind:"terminus",
+    text:"Eindpunt aan de rand van het Griftpark. Vanaf de Grietstraat is het nog een paar minuten — en dan zit je."
+  }
+];
+
+const EXTRAS = [
+  { title:"De Boekenkast", artist:"Jan is de Man & Deef Feed", year:2019, place:"Mimosastraat, Ondiep",
+    lat:52.101301, lng:5.099436,
+    text:"Een boekenkast van drie hoog, met de lievelingsboeken van de buurt in de ruggen. De meest gefotografeerde muur van Utrecht.",
+    photo:{src:COMMONS+"b/be/Muurschildering_Boekenkast_JanIsDeMan.jpg/1024px-Muurschildering_Boekenkast_JanIsDeMan.jpg",
+      by:"Kattenkruid", lic:"CC BY-SA 4.0",
+      page:"https://commons.wikimedia.org/wiki/File:Muurschildering_Boekenkast_JanIsDeMan.jpg"} },
+
+  { title:"Slapende Mars", artist:"Collectief De Strakke Hand", place:"Westplein, Lombok",
+    lat:52.091067, lng:5.105247,
+    text:"Hendrick ter Brugghens <em>Slapende Mars</em> (1629), uitvergroot tot woonblokformaat. Onderdeel van de reeks Utrechtse Meesters." },
+
+  { title:"Muurschildering Monicahof", artist:"Jan Heinsbroek & Jan is de Man", place:"Monicahof 95, Pijlsweerd",
+    lat:52.097495, lng:5.112048,
+    text:"Tekst op een zijgevel in Pijlsweerd, er in drie dagen op gezet.",
+    photo:{src:COMMONS+"6/6e/%27Muurschildering%27_Monicahof_Utrecht_%2820332946779%29.jpg/1024px-%27Muurschildering%27_Monicahof_Utrecht_%2820332946779%29.jpg",
+      by:"FaceMePLS", lic:"CC BY 2.0",
+      page:"https://commons.wikimedia.org/wiki/File:%27Muurschildering%27_Monicahof_Utrecht_(20332946779).jpg"} },
+
+  { title:"Otter met Domtoren", artist:"De Verfdokter", place:"Otterstraat 116, hoek Oudenoord",
+    lat:52.098565, lng:5.109734,
+    text:"Een otter met de Domtoren, op de hoek van de Otterstraat. Precies het soort woordgrap dat Utrecht goed staat.",
+    photo:{src:COMMONS+"8/80/%27Muurschildering%27_Otterstraat_Utrecht_%2819898743363%29.jpg/1024px-%27Muurschildering%27_Otterstraat_Utrecht_%2819898743363%29.jpg",
+      by:"FaceMePLS", lic:"CC BY 2.0",
+      page:"https://commons.wikimedia.org/wiki/File:%27Muurschildering%27_Otterstraat_Utrecht_(19898743363).jpg"} },
+
+  { title:"Muurschildering 1e Daalsedijk", artist:"Jos Peeters", place:"1e Daalsedijk, Pijlsweerd",
+    lat:52.095328, lng:5.107522,
+    text:"De geschiedenis van de Daalsebuurt, uitgesmeerd over een hele wand.",
+    photo:{src:COMMONS+"3/3c/%27Daalsedijkroute%27_Utrecht_%2818674863418%29.jpg/1024px-%27Daalsedijkroute%27_Utrecht_%2818674863418%29.jpg",
+      by:"FaceMePLS", lic:"CC BY 2.0",
+      page:"https://commons.wikimedia.org/wiki/File:%27Daalsedijkroute%27_Utrecht_(18674863418).jpg"} },
+
+  { title:"Mural Lagenoord", place:"Lagenoord, Ondiep", lat:52.104973, lng:5.108841,
+    text:"Flink uit de kluiten gewassen muurschildering aan de noordkant van Ondiep.",
+    photo:{src:COMMONS+"e/eb/Mural_-_Lagenoord_Utrecht_%2841891654365%29.jpg/1024px-Mural_-_Lagenoord_Utrecht_%2841891654365%29.jpg",
+      by:"FaceMePLS", lic:"CC BY 2.0",
+      page:"https://commons.wikimedia.org/wiki/File:Mural_-_Lagenoord_Utrecht_(41891654365).jpg"} },
+
+  { title:"Dafne Schippers", place:"Adelaarstraat, Vogelenbuurt", lat:52.099941, lng:5.118906,
+    text:"Utrechts eigen sprintster, op ware grootte tegen een gevel in de Vogelenbuurt.",
+    photo:{src:COMMONS+"e/ed/Dafne_Schippers_-_Adelaarstraat_Utrecht_%2829504891234%29.jpg/1024px-Dafne_Schippers_-_Adelaarstraat_Utrecht_%2829504891234%29.jpg",
+      by:"FaceMePLS", lic:"CC BY 2.0",
+      page:"https://commons.wikimedia.org/wiki/File:Dafne_Schippers_-_Adelaarstraat_Utrecht_(29504891234).jpg"} },
+
+  { title:"Muurdecoratie Draaiweg", place:"Draaiweg, Vogelenbuurt", lat:52.100996, lng:5.115477,
+    text:"Vrolijk beschilderde muur in de Vogelenbuurt.",
+    photo:{src:COMMONS+"6/69/Muurdecoratie_Draaiweg_Utrecht_%2826303210190%29.jpg/1024px-Muurdecoratie_Draaiweg_Utrecht_%2826303210190%29.jpg",
+      by:"FaceMePLS", lic:"CC BY 2.0",
+      page:"https://commons.wikimedia.org/wiki/File:Muurdecoratie_Draaiweg_Utrecht_(26303210190).jpg"} },
+
+  { title:"Leonard Ornstein", artist:"Collectief De Strakke Hand", place:"Bij station Vaartsche Rijn",
+    lat:52.079017, lng:5.122116, tags:["lus door de Watervogelbuurt, +1,8 km"],
+    text:"Eerbetoon aan natuurkundige Leonard Ornstein (1880–1941), die het Utrechtse natuurkundig laboratorium wereldfaam bezorgde en in 1940 werd ontslagen omdat hij Joods was. Hier begint de lus door de Watervogelbuurt: sla bij de Wijde Watersteeg af richting het Ledig Erf in plaats van terug te lopen naar de Oudegracht." },
+
+  { title:"Sun Shine Some Where", artist:"Studio Sigmon", place:"Wulpstraat, Watervogelbuurt",
+    lat:52.079539, lng:5.125012, tags:["zijlus"],
+    text:"Kleur op een verder grauwe zijgevel — een van de vrolijkste muren van de buurt." },
+
+  { title:"De fietsers", artist:"Leerlingen van het Nimeto", year:2015, place:"Watervogelbuurt",
+    lat:52.079000, lng:5.127200, approx:true, tags:["zijlus"],
+    text:"Wielrenners die tegen de muur op fietsen, geschilderd voor de Grand Départ van 2015, toen de Tour de France hier van start ging." },
+
+  { title:"De KBTR op een gans", place:"Gansstraat, Watervogelbuurt", lat:52.078576, lng:5.129035,
+    tags:["zijlus"],
+    text:"De Utregse Kabouter vliegt op een gans door de Gansstraat, als een soort Niels Holgersson in striplijnen. Verderop in dezelfde straat schiet een zwerm ganzen een steegje in." },
+
+  { title:"Teddies in Space", artist:"Philipp Jordan", place:"Hopakker", lat:52.098443, lng:5.116548,
+    text:"Teddyberen, raketten en fantasiedieren tussen het gebladerte, op een donkere ondergrond." },
+
+  { title:"Night Tour", artist:"Aafke Bouman", year:2022, place:"Molenstraat, binnenstad",
+    lat:52.096333, lng:5.124610,
+    text:"Ontstaan uit de nachtelijke ommetjes van de lockdown, gemaakt voor Utrecht 900." },
+
+  { title:"Kind met ruiter", artist:"Collectief De Strakke Hand", year:"2019–2021", place:"Pijperlaan, Oog in Al",
+    lat:52.081862, lng:5.089262,
+    text:"Meters hoog tegen de zijgevel van Hotel Ibis.",
+    photo:{src:COMMONS+"7/78/Muurschildering_kind_met_ruiter_-_Hotel_Ibis_Utrecht%2C_Pijperlaan_-_Collectief_De_Strakke_Hand%2C_2019_-_2021%2C_01.jpg/1024px-Muurschildering_kind_met_ruiter_-_Hotel_Ibis_Utrecht%2C_Pijperlaan_-_Collectief_De_Strakke_Hand%2C_2019_-_2021%2C_01.jpg",
+      by:"Hans Muller", lic:"CC BY-SA 4.0",
+      page:"https://commons.wikimedia.org/wiki/File:Muurschildering_kind_met_ruiter_-_Hotel_Ibis_Utrecht,_Pijperlaan_-_Collectief_De_Strakke_Hand,_2019_-_2021,_01.jpg"} },
+
+  { title:"De Fluitspeler", place:"Dorbeendreef, Overvecht", lat:52.112083, lng:5.115104,
+    text:"Het slotstuk van de reeks Utrechtse Meesters, uitvergroot tegen een flat in Overvecht.",
+    photo:{src:COMMONS+"c/cb/Geef_Utrechtse_Meesters_een_gezicht_-_De_fluitspeler.jpg/1024px-Geef_Utrechtse_Meesters_een_gezicht_-_De_fluitspeler.jpg",
+      by:"Kattenkruid", lic:"CC BY-SA 4.0",
+      page:"https://commons.wikimedia.org/wiki/File:Geef_Utrechtse_Meesters_een_gezicht_-_De_fluitspeler.jpg"} },
+
+  { title:"De Luitspeler", artist:"Collectief De Strakke Hand", place:"Spaaklaan, Kanaleneiland",
+    lat:52.077279, lng:5.088726,
+    text:"Dirck van Baburens <em>Luitspeler</em> (1622), op flatformaat." },
+
+  { title:"Toeslag af.", artist:"Jan is de Man", place:"Taagdreef 2, Overvecht", lat:52.110561, lng:5.116632,
+    text:"Tekst op de kopgevel van een flat in Overvecht." },
+
+  { title:"Mural Kalymnosdreef", place:"Kalymnosdreef, Overvecht", lat:52.117465, lng:5.111612,
+    text:"Gemaakt voor het eeuwfeest van De Stijl." },
+
+  { title:"Mural Croeselaan", artist:"Munir de Vries", place:"Croeselaan, hoek Van Zijstweg",
+    lat:52.083680, lng:5.107356,
+    text:"190 vierkante meter vol verhalen van bewoners uit de Dichterswijk. Het origineel uit 2017 is inmiddels vervangen door nieuw werk van dezelfde maker." }
+];
+
+/* ========================== helpers ========================== */
+const R = 6371;
+const toRad = d => d*Math.PI/180;
+function haversine(a,b){
+  const dLat=toRad(b.lat-a.lat), dLng=toRad(b.lng-a.lng);
+  const s=Math.sin(dLat/2)**2 + Math.cos(toRad(a.lat))*Math.cos(toRad(b.lat))*Math.sin(dLng/2)**2;
+  return 2*R*Math.asin(Math.sqrt(s));
+}
+function routeLength(pts){
+  let t=0; for(let i=1;i<pts.length;i++) t+=haversine(pts[i-1],pts[i]); return t;
+}
+const esc = s => String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ========================== theme ========================== */
+const rootEl = document.documentElement;
+function currentTheme(){
+  return rootEl.getAttribute('data-theme') ||
+    (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+}
+try{
+  const saved = localStorage.getItem('sau-theme');
+  if(saved) rootEl.setAttribute('data-theme', saved);
+}catch(e){}
+document.getElementById('themeBtn').addEventListener('click', ()=>{
+  const next = currentTheme()==='dark' ? 'light' : 'dark';
+  rootEl.setAttribute('data-theme', next);
+  try{ localStorage.setItem('sau-theme', next); }catch(e){}
+  applyTileTheme();
+});
+
+/* ========================== map ========================== */
+const map = L.map('map', { scrollWheelZoom:true, zoomControl:true });
+const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom:19, attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
+
+function applyTileTheme(){
+  const dark = currentTheme()==='dark';
+  const pane = map.getPane('tilePane');
+  if(pane) pane.classList.toggle('tiles-dark', dark);
+}
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTileTheme);
+
+const routeLatLngs = ROUTE.map(s=>[s.lat, s.lng]);
+L.polyline(routeLatLngs, {
+  color:'#d7451f', weight:3.5, opacity:.55, dashArray:'1 7', lineCap:'round'
+}).addTo(map);
+
+const markers = [];
+function makeMarker(stop, i, kind){
+  const label = kind==='extra' ? '•' : (i+1);
+  const cls = 'num-marker' + (stop.kind==='terminus' ? ' terminus' : '') + (kind==='extra' ? ' extra' : '');
+  const size = kind==='extra' ? 22 : 28;
+  const icon = L.divIcon({
+    className:'', html:`<div class="${cls}">${label}</div>`,
+    iconSize:[size,size], iconAnchor:[size/2,size/2], popupAnchor:[0,-size/2]
+  });
+  const m = L.marker([stop.lat, stop.lng], {icon, title:stop.title, riseOnHover:true});
+  m.bindPopup(
+    `<b>${esc(stop.title)}</b><span>${esc(stop.place||'')}${stop.artist?' · '+esc(stop.artist):''}</span>`
+  );
+  return m;
+}
+
+const extraLayer = L.layerGroup();
+
+ROUTE.forEach((stop,i)=>{
+  const m = makeMarker(stop,i,'route').addTo(map);
+  m.on('click', ()=> focusStop(i, {fromMap:true}));
+  markers.push(m);
+});
+EXTRAS.forEach((stop,i)=>{
+  const m = makeMarker(stop,i,'extra');
+  m.on('click', ()=>{
+    const el = document.getElementById('x'+i);
+    if(el && !el.closest('.stops').classList.contains('hidden')){
+      el.scrollIntoView({behavior:'smooth', block:'center'});
+    }
+  });
+  extraLayer.addLayer(m);
+});
+
+map.fitBounds(L.latLngBounds(routeLatLngs).pad(0.12));
+applyTileTheme();
+
+/* ========================== render list ========================== */
+function photoBlock(p){
+  if(!p) return '';
+  return `<figure class="shot">
+      <img src="${p.src}" alt="" loading="lazy" decoding="async"
+           onerror="this.closest('.shot').remove()">
+      <figcaption class="credit">Foto: ${esc(p.by)} · ${esc(p.lic)} ·
+        <a href="${p.page}" target="_blank" rel="noopener">Wikimedia Commons</a></figcaption>
+    </figure>`;
+}
+function linkBlock(stop){
+  const q = encodeURIComponent(stop.lat+','+stop.lng);
+  return `<div class="links">
+      <a class="lnk" href="https://www.google.com/maps/dir/?api=1&destination=${q}&travelmode=walking"
+         target="_blank" rel="noopener">Looproute →</a>
+      <a class="lnk" href="https://www.openstreetmap.org/?mlat=${stop.lat}&mlon=${stop.lng}#map=19/${stop.lat}/${stop.lng}"
+         target="_blank" rel="noopener">Op OpenStreetMap</a>
+    </div>`;
+}
+function cardHTML(stop, i, kind){
+  const num = kind==='extra' ? '★' : (i+1);
+  const metaBits = [];
+  if(stop.artist) metaBits.push('<em>'+esc(stop.artist)+'</em>');
+  if(stop.year) metaBits.push(esc(stop.year));
+  if(stop.place) metaBits.push(esc(stop.place));
+  const tags = [];
+  if(stop.approx) tags.push('<span class="tag warn">locatie geschat</span>');
+  (stop.tags||[]).forEach(t=>tags.push('<span class="tag">'+esc(t)+'</span>'));
+  const list = stop.list ? '<ul>'+stop.list.map(x=>'<li>'+x+'</li>').join('')+'</ul>' : '';
+
+  return `<article class="stop ${stop.kind==='terminus'?'terminus':''} ${kind==='extra'?'extra':''}"
+             id="${kind==='extra'?'x':'s'}${i}" data-i="${i}" data-kind="${kind}" tabindex="0">
+      <div class="badge">${num}</div>
+      <div>
+        <h4>${esc(stop.title)}</h4>
+        <div class="meta">${metaBits.join(' · ')}</div>
+        <p class="desc">${stop.text}${list}</p>
+        ${tags.length?'<div class="tagrow">'+tags.join('')+'</div>':''}
+      </div>
+      ${photoBlock(stop.photo)}
+      ${linkBlock(stop)}
+    </article>`;
+}
+
+document.getElementById('stops').innerHTML  = ROUTE.map((s,i)=>cardHTML(s,i,'route')).join('');
+document.getElementById('extras').innerHTML = EXTRAS.map((s,i)=>cardHTML(s,i,'extra')).join('');
+
+/* ========================== interaction ========================== */
+let active = -1;
+function focusStop(i, opt={}){
+  if(active>=0){
+    document.getElementById('s'+active)?.classList.remove('is-active');
+    markers[active]?.getElement()?.querySelector('.num-marker')?.classList.remove('is-active');
+  }
+  active = i;
+  const card = document.getElementById('s'+i);
+  card?.classList.add('is-active');
+  markers[i]?.getElement()?.querySelector('.num-marker')?.classList.add('is-active');
+  markers[i]?.openPopup();
+  if(opt.fromMap){
+    card?.scrollIntoView({behavior:'smooth', block: window.innerWidth>1000 ? 'center':'start'});
+  }else{
+    map.flyTo([ROUTE[i].lat, ROUTE[i].lng], Math.max(map.getZoom(), 16), {duration:.7});
+  }
+}
+
+document.getElementById('stops').addEventListener('click', e=>{
+  if(e.target.closest('a')) return;
+  const card = e.target.closest('.stop'); if(!card) return;
+  focusStop(+card.dataset.i);
+});
+document.getElementById('stops').addEventListener('keydown', e=>{
+  if(e.key!=='Enter' && e.key!==' ') return;
+  const card = e.target.closest('.stop'); if(!card) return;
+  e.preventDefault(); focusStop(+card.dataset.i);
+});
+
+document.getElementById('extras').addEventListener('click', e=>{
+  if(e.target.closest('a')) return;
+  const card = e.target.closest('.stop'); if(!card) return;
+  const s = EXTRAS[+card.dataset.i];
+  map.flyTo([s.lat, s.lng], 16, {duration:.7});
+});
+
+const extraBtn = document.getElementById('extraBtn');
+const extrasEl = document.getElementById('extras');
+extraBtn.textContent = 'Toon '+EXTRAS.length+' extra’s';
+extraBtn.addEventListener('click', ()=>{
+  const show = extrasEl.classList.contains('hidden');
+  extrasEl.classList.toggle('hidden', !show);
+  extraBtn.setAttribute('aria-expanded', String(show));
+  extraBtn.textContent = show ? 'Verberg extra’s' : 'Toon '+EXTRAS.length+' extra’s';
+  if(show){ extraLayer.addTo(map); } else { map.removeLayer(extraLayer); }
+});
+
+/* ========================== stats ========================== */
+const km = routeLength(ROUTE);
+const walkKm = km*1.25;                 // straatjes lopen nooit hemelsbreed
+document.getElementById('stat-stops').textContent = ROUTE.length;
+document.getElementById('stat-km').textContent = walkKm.toFixed(1).replace('.',',');
+document.getElementById('stat-time').textContent =
+  Math.round(walkKm/4.5*60/5)*5 + ' min';
+</script>
+</body>
+</html>
